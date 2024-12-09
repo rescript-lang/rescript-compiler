@@ -54,7 +54,7 @@ module Typ = struct
 
   let any ?loc ?attrs () = mk ?loc ?attrs Ptyp_any
   let var ?loc ?attrs a = mk ?loc ?attrs (Ptyp_var a)
-  let arrow ?loc ?attrs ?arity a b c =
+  let arrow ?loc ?attrs ~arity a b c =
     mk ?loc ?attrs (Ptyp_arrow (a, b, c, arity))
   let tuple ?loc ?attrs a = mk ?loc ?attrs (Ptyp_tuple a)
   let constr ?loc ?attrs a b = mk ?loc ?attrs (Ptyp_constr (a, b))

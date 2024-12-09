@@ -95,7 +95,8 @@ let from_labels ~loc arity labels : t =
   in
   Ext_list.fold_right2 labels tyvars result_type
     (fun label (* {loc ; txt = label }*) tyvar acc ->
-      Ast_compatible.label_arrow ~loc:label.loc label.txt tyvar acc)
+      Ast_compatible.label_arrow ~loc:label.loc ~arity:(Some arity) label.txt
+        tyvar acc)
 
 let make_obj ~loc xs = Typ.object_ ~loc xs Closed
 
