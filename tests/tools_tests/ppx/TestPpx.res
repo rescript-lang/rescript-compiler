@@ -18,3 +18,8 @@ module OptionalFields = {
 
   let r = {y: 1.0}
 }
+
+module Uncurried = {
+  type f1 = int => string
+  type f2 = (int, int) => string
+}
