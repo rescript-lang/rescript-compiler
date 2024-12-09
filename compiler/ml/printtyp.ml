@@ -159,7 +159,7 @@ and raw_type_list tl = raw_list raw_type tl
 
 and raw_type_desc ppf = function
   | Tvar name -> fprintf ppf "Tvar %a" print_name name
-  | Tarrow (l, t1, t2, c) ->
+  | Tarrow (l, t1, t2, c, _) ->
     fprintf ppf "@[<hov1>Tarrow(\"%s\",@,%a,@,%a,@,%s)@]" (string_of_label l)
       raw_type t1 raw_type t2 (safe_commu_repr [] c)
   | Ttuple tl -> fprintf ppf "@[<1>Ttuple@,%a@]" raw_type_list tl
@@ -501,7 +501,7 @@ let rec mark_loops_rec visited ty =
     let visited = px :: visited in
     match ty.desc with
     | Tvar _ -> add_named_var ty
-    | Tarrow (_, ty1, ty2, _) ->
+    | Tarrow (_, ty1, ty2, _, _) ->
       mark_loops_rec visited ty1;
       mark_loops_rec visited ty2
     | Ttuple tyl -> List.iter (mark_loops_rec visited) tyl
@@ -582,7 +582,7 @@ let rec tree_of_typexp sch ty =
         let non_gen = is_non_gen sch ty in
         let name_gen = if non_gen then new_weak_name ty else new_name in
         Otyp_var (non_gen, name_of_type name_gen ty)
-      | Tarrow (l, ty1, ty2, _) ->
+      | Tarrow (l, ty1, ty2, _, _) ->
         let pr_arrow l ty1 ty2 =
           let lab = string_of_label l in
           let t1 =

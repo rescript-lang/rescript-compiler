@@ -935,11 +935,17 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     match type_annotation.ptyp_desc with
     | Ptyp_constr (({txt = Lident "function$"; _} as lid), [t; arity_]) ->
       ( t,
-        fun ~arity x ->
+        fun ~arity (x : Parsetree.core_type) ->
           let t_arity =
             match arity with
             | Some arity -> Ast_uncurried.arity_type ~loc arity
             | None -> arity_
+          in
+          let x =
+            match x.ptyp_desc with
+            | Ptyp_arrow (l, t1, t2, _) ->
+              {x with ptyp_desc = Ptyp_arrow (l, t1, t2, arity)}
+            | _ -> x
           in
           {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x; t_arity])} )
     | _ -> (type_annotation, fun ~arity:_ x -> x)

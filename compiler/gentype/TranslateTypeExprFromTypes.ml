@@ -270,7 +270,7 @@ let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
   | Tlink t ->
     translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
       ~rev_args t
-  | Tarrow (Nolabel, type_expr1, type_expr2, _) ->
+  | Tarrow (Nolabel, type_expr1, type_expr2, _, _) ->
     let {dependencies; type_} =
       type_expr1 |> fun __x ->
       translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env __x
@@ -280,7 +280,8 @@ let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
     |> translate_arrow_type ~config ~type_vars_gen ~type_env
          ~rev_arg_deps:next_rev_deps
          ~rev_args:((Nolabel, type_) :: rev_args)
-  | Tarrow (((Labelled lbl | Optional lbl) as label), type_expr1, type_expr2, _)
+  | Tarrow
+      (((Labelled lbl | Optional lbl) as label), type_expr1, type_expr2, _, _)
     -> (
     match type_expr1 |> remove_option ~label with
     | None ->

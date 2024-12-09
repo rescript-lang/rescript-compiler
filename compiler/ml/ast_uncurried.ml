@@ -83,20 +83,34 @@ let type_to_arity (t_arity : Types.type_expr) =
   | Tvariant {row_fields = [(label, _)]} -> decode_arity_string label
   | _ -> assert false
 
-let make_uncurried_type ~env ~arity t =
+let fun_type_to_arity (t_arity : Types.type_expr) =
+  match (Ctype.repr t_arity).desc with
+  | Tarrow (_, _, _, _, Some arity) -> arity
+  | Tarrow _ -> assert false
+  | _ -> assert false
+
+let make_uncurried_type ~env ~arity (t : Types.type_expr) =
   let typ_arity = arity_to_type arity in
   let lid : Longident.t = Lident "function$" in
   let path = Env.lookup_type lid env in
+  let t =
+    match t.desc with
+    | Tarrow (l, t1, t2, c, _) ->
+      let _ = assert false in
+      {t with desc = Tarrow (l, t1, t2, c, Some arity)}
+    | Tconstr _ -> assert false
+    | Tvar _ -> t
+    | _ -> assert false
+  in
   Ctype.newconstr path [t; typ_arity]
 
 let uncurried_type_get_arity ~env typ =
   match (Ctype.expand_head env typ).desc with
-  | Tconstr (Pident {name = "function$"}, [_t; t_arity], _) ->
-    type_to_arity t_arity
+  | Tconstr (Pident {name = "function$"}, [t; _arity], _) -> fun_type_to_arity t
   | _ -> assert false
 
 let uncurried_type_get_arity_opt ~env typ =
   match (Ctype.expand_head env typ).desc with
-  | Tconstr (Pident {name = "function$"}, [_t; t_arity], _) ->
-    Some (type_to_arity t_arity)
+  | Tconstr (Pident {name = "function$"}, [t; _arity], _) ->
+    Some (fun_type_to_arity t)
   | _ -> None

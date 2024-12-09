@@ -408,10 +408,8 @@ and with_constraint =
   | Twith_modsubst of Path.t * Longident.t loc
 
 and core_type = {
-  mutable ctyp_desc: core_type_desc;
-      (** mutable because of [Typeclass.declare_method] *)
-  mutable ctyp_type: type_expr;
-      (** mutable because of [Typeclass.declare_method] *)
+  ctyp_desc: core_type_desc;
+  ctyp_type: type_expr;
   ctyp_env: Env.t; (* BINANNOT ADDED *)
   ctyp_loc: Location.t;
   ctyp_attributes: attributes;

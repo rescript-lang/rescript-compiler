@@ -6,62 +6,65 @@ let mixFun [arity:3]a b c [arity:3]d e f [arity:2]g h = 4
 let bracesFun [arity:1]x [arity:1]y = x + y
 let cFun2 [arity:2]x y = 3
 let uFun2 [arity:2]x y = 3
-type nonrec cTyp = (string -> int, [ `Has_arity1 ]) function$
-type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
+type nonrec cTyp = (string -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec uTyp = (string -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec mixTyp =
   (string ->
      string ->
        string ->
          (string ->
             string ->
-              string -> (string -> string -> int, [ `Has_arity2 ]) function$,
-           [ `Has_arity3 ]) function$,
+              string ->
+                (string -> string -> int (a:2), [ `Has_arity2 ]) function$ (a:3),
+           [ `Has_arity3 ]) function$ (a:3),
     [ `Has_arity3 ]) function$
 type nonrec bTyp =
-  (string -> (string -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec cTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
-type nonrec uTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
-type nonrec cu = (unit -> int, [ `Has_arity1 ]) function$
-type nonrec cp = (unit -> int, [ `Has_arity1 ]) function$
+  (string -> (string -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec cTyp2 =
+  (string -> string -> int (a:2), [ `Has_arity2 ]) function$
+type nonrec uTyp2 =
+  (string -> string -> int (a:2), [ `Has_arity2 ]) function$
+type nonrec cu = (unit -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec cp = (unit -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec cuu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cpu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cup =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cpp =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec cu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec cp2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec uu = (unit -> int, [ `Has_arity1 ]) function$
-type nonrec up = (unit -> int, [ `Has_arity1 ]) function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec cu2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec cp2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec uu = (unit -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec up = (unit -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec uuu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec upu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec uup =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec upp =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec uu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec up2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec uu2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec up2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
 type nonrec cnested =
-  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
-    function$
+  ((string -> unit (a:1), [ `Has_arity1 ]) function$ -> unit (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec unested =
-  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
-    function$
-let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
-let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
+  ((string -> unit (a:1), [ `Has_arity1 ]) function$ -> unit (a:1),
+    [ `Has_arity1 ]) function$
+let (uannpoly : ('a -> string (a:1), [ `Has_arity1 ]) function$) = xx
+let (uannint : (int -> string (a:1), [ `Has_arity1 ]) function$) = xx
 let _ = ((fun [arity:1]x -> 34)[@att ])
 let _ = ((fun [arity:1]x -> 34)[@res.async ][@att ])
 let _ = preserveAttr ((fun [arity:1]x -> 34)[@att ])
@@ -73,16 +76,16 @@ let t3 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t4 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t5 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t6 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
-type nonrec arrowPath1 = (int -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath2 = (I.t -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath3 = (int -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath4 = (I.t -> string, [ `Has_arity1 ]) function$
+type nonrec arrowPath1 = (int -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath2 = (I.t -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath3 = (int -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath4 = (I.t -> string (a:1), [ `Has_arity1 ]) function$
 type nonrec callback1 =
-  (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
 type nonrec callback2 =
-  (ReactEvent.Mouse.t -> unit as 'u, [ `Has_arity1 ]) function$
+  (ReactEvent.Mouse.t -> unit as 'u (a:1), [ `Has_arity1 ]) function$
 type nonrec callback3 =
-  (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
 let cApp = foo 3
 let uApp = foo 3
 let cFun [arity:1]x = 3
@@ -92,64 +95,67 @@ let bracesFun [arity:1]x [arity:1]y = x + y
 let cFun2 [arity:2]x y = 3
 let uFun2 [arity:2]x y = 3
 let cFun2Dots [arity:2]x y = 3
-type nonrec cTyp = (string -> int, [ `Has_arity1 ]) function$
-type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
+type nonrec cTyp = (string -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec uTyp = (string -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec mixTyp =
   (string ->
      (string ->
         string ->
           (string ->
              string ->
-               string -> string -> (string -> int, [ `Has_arity1 ]) function$,
-            [ `Has_arity4 ]) function$,
-       [ `Has_arity2 ]) function$,
+               string ->
+                 string -> (string -> int (a:1), [ `Has_arity1 ]) function$ (a:4),
+            [ `Has_arity4 ]) function$ (a:2),
+       [ `Has_arity2 ]) function$ (a:1),
     [ `Has_arity1 ]) function$
 type nonrec bTyp =
-  (string -> (string -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec cTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
-type nonrec uTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
-type nonrec cu = (unit -> int, [ `Has_arity1 ]) function$
-type nonrec cp = (unit -> int, [ `Has_arity1 ]) function$
+  (string -> (string -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec cTyp2 =
+  (string -> string -> int (a:2), [ `Has_arity2 ]) function$
+type nonrec uTyp2 =
+  (string -> string -> int (a:2), [ `Has_arity2 ]) function$
+type nonrec cu = (unit -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec cp = (unit -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec cuu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cpu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cup =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec cpp =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec cu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec cp2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec uu = (unit -> int, [ `Has_arity1 ]) function$
-type nonrec up = (unit -> int, [ `Has_arity1 ]) function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec cu2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec cp2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec uu = (unit -> int (a:1), [ `Has_arity1 ]) function$
+type nonrec up = (unit -> int (a:1), [ `Has_arity1 ]) function$
 type nonrec uuu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec upu =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec uup =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec upp =
-  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
-    function$
-type nonrec uu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
-type nonrec up2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
+  (unit -> (unit -> int (a:1), [ `Has_arity1 ]) function$ (a:1),
+    [ `Has_arity1 ]) function$
+type nonrec uu2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
+type nonrec up2 = (unit -> unit -> unit (a:2), [ `Has_arity2 ]) function$
 type nonrec cnested =
-  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
-    function$
+  ((string -> unit (a:1), [ `Has_arity1 ]) function$ -> unit (a:1),
+    [ `Has_arity1 ]) function$
 type nonrec unested =
-  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
-    function$
+  ((string -> unit (a:1), [ `Has_arity1 ]) function$ -> unit (a:1),
+    [ `Has_arity1 ]) function$
 let pipe1 = 3 |.u f
-let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
-let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
+let (uannpoly : ('a -> string (a:1), [ `Has_arity1 ]) function$) = xx
+let (uannint : (int -> string (a:1), [ `Has_arity1 ]) function$) = xx
 let _ = ((fun [arity:1]x -> 34)[@att ])
 let _ = ((fun [arity:1]x -> 34)[@res.async ][@att ])
 let _ = preserveAttr ((fun [arity:1]x -> 34)[@att ])
@@ -158,13 +164,13 @@ let t0 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t1 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t2 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
 let t3 (type a) (type b) [arity:2](l : a list) (x : a) = x :: l
-type nonrec arrowPath1 = (int -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath2 = (I.t -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath3 = (int -> string, [ `Has_arity1 ]) function$
-type nonrec arrowPath4 = (I.t -> string, [ `Has_arity1 ]) function$
+type nonrec arrowPath1 = (int -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath2 = (I.t -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath3 = (int -> string (a:1), [ `Has_arity1 ]) function$
+type nonrec arrowPath4 = (I.t -> string (a:1), [ `Has_arity1 ]) function$
 type nonrec callback1 =
-  (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
 type nonrec callback2 =
-  (ReactEvent.Mouse.t -> unit as 'u, [ `Has_arity1 ]) function$
+  (ReactEvent.Mouse.t -> unit as 'u (a:1), [ `Has_arity1 ]) function$
 type nonrec callback3 =
-  (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
