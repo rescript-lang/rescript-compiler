@@ -30,27 +30,26 @@ module Make(Cmp:sig
     type nonrec coll = key list
     let empty = []
     let add =
-      ((Function$
-          (fun (y : coll) ->
-             fun (e : key) ->
-               if List.exists ((Function$ (fun x -> eq x e))[@res.arity 1]) y
-               then y
-               else e :: y))
-      [@res.arity 2])
+      Function$
+        (fun [arity:2](y : coll) ->
+           fun [arity:1](e : key) ->
+             if List.exists (Function$ (fun [arity:1]x -> eq x e)) y
+             then y
+             else e :: y)
   end 
 module Gen1(P:Primitive)() =
   struct
     type nonrec t = P.t
     type nonrec internal = P.t
-    let inject = ((Function$ (fun t -> t))[@res.arity 1])
+    let inject = Function$ (fun [arity:1]t -> t)
   end
 module DistinctString() : StringBased =
   struct
     type nonrec t = string
-    let inject = ((Function$ (fun t -> t))[@res.arity 1])
+    let inject = Function$ (fun [arity:1]t -> t)
   end 
 module DistinctString() : StringBased =
   struct
     type nonrec t = string
-    let inject = ((Function$ (fun t -> t))[@res.arity 1])
+    let inject = Function$ (fun [arity:1]t -> t)
   end 

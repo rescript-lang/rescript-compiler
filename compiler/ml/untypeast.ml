@@ -312,7 +312,8 @@ let expression sub exp =
     (* One case, no guard: It's a fun. *)
     | Texp_function
         {arg_label; cases = [{c_lhs = p; c_guard = None; c_rhs = e}]; _} ->
-      Pexp_fun (arg_label, None, sub.pat sub p, sub.expr sub e)
+      let arity = assert false in
+      Pexp_fun (arg_label, None, sub.pat sub p, sub.expr sub e, arity)
     (* No label: it's a function. *)
     | Texp_function {arg_label = Nolabel; cases; _} ->
       Pexp_function (sub.cases sub cases)
@@ -320,13 +321,15 @@ let expression sub exp =
     | Texp_function {arg_label = (Labelled s | Optional s) as label; cases; _}
       ->
       let name = fresh_name s exp.exp_env in
+      let arity = assert false in
       Pexp_fun
         ( label,
           None,
           Pat.var ~loc {loc; txt = name},
           Exp.match_ ~loc
             (Exp.ident ~loc {loc; txt = Lident name})
-            (sub.cases sub cases) )
+            (sub.cases sub cases),
+          arity )
     | Texp_apply (exp, list) ->
       Pexp_apply
         ( sub.expr sub exp,

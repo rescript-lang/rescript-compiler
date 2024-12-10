@@ -225,7 +225,8 @@ and expression_desc =
        let rec P1 = E1 and ... and Pn = EN in E   (flag = Recursive)
     *)
   | Pexp_function of case list (* function P1 -> E1 | ... | Pn -> En *)
-  | Pexp_fun of arg_label * expression option * pattern * expression
+  | Pexp_fun of
+      arg_label * expression option * pattern * expression * int option
     (* fun P -> E1                          (Simple, None)
        fun ~l:P -> E1                       (Labelled l, None)
        fun ?l:P -> E1                       (Optional l, None)

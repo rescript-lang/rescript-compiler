@@ -46,7 +46,7 @@ let init () =
                   ->
                     let txt = "param" in
                     Ast_comb.single_non_rec_value ?attrs:gentype_attrs pld_name
-                      (Ast_compatible.fun_
+                      (Ast_compatible.fun_ ~arity:None
                          (Pat.constraint_ (Pat.var {txt; loc}) core_type)
                          (Exp.field
                             (Exp.ident {txt = Lident txt; loc})
@@ -108,7 +108,9 @@ let init () =
                              annotate_type
                          in
                          Ext_list.fold_right vars exp (fun var b ->
-                             Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)
+                             Ast_compatible.fun_ ~arity:None
+                               (Pat.var {loc; txt = var})
+                               b)
                          |> handle_uncurried_accessor_tranform ~loc ~arity))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.not_applicable tdcl.ptype_loc deriving_name;

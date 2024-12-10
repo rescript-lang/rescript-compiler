@@ -236,8 +236,13 @@ and expression i ppf x =
   | Pexp_function l ->
     line i ppf "Pexp_function\n";
     list i case ppf l
-  | Pexp_fun (l, eo, p, e) ->
+  | Pexp_fun (l, eo, p, e, arity) ->
     line i ppf "Pexp_fun\n";
+    let () =
+      match arity with
+      | None -> ()
+      | Some arity -> line i ppf "arity:%d\n" arity
+    in
     arg_label i ppf l;
     option i expression ppf eo;
     pattern i ppf p;

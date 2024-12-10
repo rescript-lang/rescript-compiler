@@ -1318,7 +1318,7 @@ let completionWithParser1 ~currentFile ~debug ~offset ~path ~posCursor
             match exprToContextPath lhs with
             | Some contextPath -> setResult (Cpath (CPObj (contextPath, label)))
             | None -> ())
-        | Pexp_fun (lbl, defaultExpOpt, pat, e) ->
+        | Pexp_fun (lbl, defaultExpOpt, pat, e, _) ->
           let oldScope = !scope in
           (match (!processingFun, !currentCtxPath) with
           | None, Some ctxPath -> processingFun := Some (ctxPath, 0)

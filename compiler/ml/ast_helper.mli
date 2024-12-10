@@ -132,6 +132,7 @@ module Exp : sig
   val fun_ :
     ?loc:loc ->
     ?attrs:attrs ->
+    arity:int option ->
     arg_label ->
     expression option ->
     pattern ->

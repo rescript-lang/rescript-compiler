@@ -16,28 +16,23 @@ let steve =
   ((([%obj { name = {js|Steve|js}; age = 30 }] : < user ;age: int   > ))
   [@res.braces ])
 let printFullUser =
-  ((Function$ (fun (steve : < user ;age: int   > ) -> Js.log steve))
-  [@res.arity 1])
+  Function$ (fun [arity:1](steve : < user ;age: int   > ) -> Js.log steve)
 let printFullUser =
-  ((Function$
-      (fun ~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ]) ->
-         Js.log steve))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ])
+       -> Js.log steve)
 let printFullUser =
-  ((Function$
-      (fun ~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ]) ->
-         Js.log steve))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ])
+       -> Js.log steve)
 let printFullUser =
-  ((Function$
-      (fun ?user:(((user)[@res.namedArgLoc ])=
-         (steve : < user ;age: int   > )) -> Js.log steve))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]?user:(((user)[@res.namedArgLoc ])=
+       (steve : < user ;age: int   > )) -> Js.log steve)
 external steve : < user ;age: int   >  = "steve"[@@val ]
 let makeCeoOf30yearsOld =
-  ((Function$
-      (fun name -> ([%obj { name; age = 30 }] : < user ;age: int   > )))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]name -> ([%obj { name; age = 30 }] : < user ;age: int   > ))
 type nonrec optionalUser = < user ;age: int   >  option
 type nonrec optionalTupleUser =
   (< user ;age: int   >  * < user ;age: int   > ) option

@@ -18,3 +18,9 @@ module OptionalFields = {
 
   let r = {y: 1.0}
 }
+
+module Arity = {
+  let one = x => x
+  let two = (x, y) => x + y
+  let n = two(one(1), 5)
+}
