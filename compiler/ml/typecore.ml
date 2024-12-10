@@ -3306,13 +3306,14 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
     type_cases ~in_function:(loc_fun, ty_fun) env ty_arg ty_res true loc
       caselist
   in
+  let case = List.hd cases in
   if is_optional l && not_function env ty_res then
-    Location.prerr_warning (List.hd cases).c_lhs.pat_loc
+    Location.prerr_warning case.c_lhs.pat_loc
       Warnings.Unerasable_optional_argument;
   let param = name_pattern "param" cases in
   re
     {
-      exp_desc = Texp_function {arg_label = l; param; cases; partial};
+      exp_desc = Texp_function {arg_label = l; param; case; partial};
       exp_loc = loc;
       exp_extra = [];
       exp_type = instance env (newgenty (Tarrow (l, ty_arg, ty_res, Cok)));
@@ -3481,13 +3482,13 @@ and type_argument ?type_clash_context ?recarg env sarg ty_expected' ty_expected
               exp_desc = Texp_apply (texp, args @ [(Nolabel, Some eta_var)]);
             }
           in
-          let cases = [case eta_pat e] in
-          let param = name_pattern "param" cases in
+          let case = case eta_pat e in
+          let param = name_pattern "param" [case] in
           {
             texp with
             exp_type = ty_fun;
             exp_desc =
-              Texp_function {arg_label = Nolabel; param; cases; partial = Total};
+              Texp_function {arg_label = Nolabel; param; case; partial = Total};
           }
         in
         Location.prerr_warning texp.exp_loc
