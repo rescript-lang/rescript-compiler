@@ -8,24 +8,26 @@ let arrow_type ?(arity = max_int) ?(attrs = []) ct =
     match typ with
     | typ when arity < 0 -> (attrs_before, List.rev acc, typ)
     | {
-     ptyp_desc = Ptyp_arrow ((Nolabel as lbl), typ1, typ2);
+     ptyp_desc = Ptyp_arrow ((Nolabel as lbl), typ1, typ2, _);
      ptyp_attributes = [];
     } ->
       let arg = ([], lbl, typ1) in
       process attrs_before (arg :: acc) typ2 (arity - 1)
     | {
-     ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2);
+     ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2, _);
      ptyp_attributes = [({txt = "bs"}, _)];
     } ->
       (* stop here, the uncurried attribute always indicates the beginning of an arrow function
          * e.g. `(. int) => (. int)` instead of `(. int, . int)` *)
       (attrs_before, List.rev acc, typ)
-    | {ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2); ptyp_attributes = _attrs}
-      as return_type ->
+    | {
+        ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2, _);
+        ptyp_attributes = _attrs;
+      } as return_type ->
       let args = List.rev acc in
       (attrs_before, args, return_type)
     | {
-     ptyp_desc = Ptyp_arrow (((Labelled _ | Optional _) as lbl), typ1, typ2);
+     ptyp_desc = Ptyp_arrow (((Labelled _ | Optional _) as lbl), typ1, typ2, _);
      ptyp_attributes = attrs;
     } ->
       (* Res_core.parse_es6_arrow_type has a workaround that removed an extra arity for the function if the
@@ -45,8 +47,10 @@ let arrow_type ?(arity = max_int) ?(attrs = []) ct =
     | typ -> (attrs_before, List.rev acc, typ)
   in
   match ct with
-  | {ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2); ptyp_attributes = attrs1}
-    as typ ->
+  | {
+      ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2, _);
+      ptyp_attributes = attrs1;
+    } as typ ->
     let attrs = attrs @ attrs1 in
     process attrs [] {typ with ptyp_attributes = []} arity
   | typ -> process attrs [] typ arity

@@ -48,6 +48,6 @@ let make =
     (fun
        [arity:1](props :
                   <
-                    handleClick: (Click.t -> unit, [ `Has_arity1 ]) function$
-                       ;value: string   > )
+                    handleClick: (Click.t -> unit (a:1), [ `Has_arity1 ])
+                                   function$  ;value: string   > )
        -> render props)

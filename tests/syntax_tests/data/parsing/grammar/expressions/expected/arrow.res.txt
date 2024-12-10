@@ -133,5 +133,5 @@ let un = (() : u)
 type nonrec ('a, 'b) d = ('a * 'b)
 let c = Function$ (fun [arity:1]() -> ((1, 2) : ('a, 'b) d))
 let fn = Function$ (fun [arity:1]f -> f)
-type nonrec f = (int -> unit, [ `Has_arity1 ]) function$
+type nonrec f = (int -> unit (a:1), [ `Has_arity1 ]) function$
 let a = fn (Function$ (fun [arity:1]_ -> ()) : f)

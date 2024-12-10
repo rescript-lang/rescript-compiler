@@ -834,7 +834,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     in
     let prim =
       match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
-      | Tarrow (Nolabel, t, _, _) -> (
+      | Tarrow (Nolabel, t, _, _, _) -> (
         match (Ctype.expand_head expr.exp_env t).desc with
         | Tconstr (Pident {name = "unit"}, [], _) -> Pjs_fn_make_unit
         | _ -> Pjs_fn_make arity)
