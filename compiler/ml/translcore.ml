@@ -554,7 +554,8 @@ let rec push_defaults loc bindings case partial =
   | {
    c_lhs = pat;
    c_guard = None;
-   c_rhs = {exp_desc = Texp_function {arg_label; param; case; partial}} as exp;
+   c_rhs =
+     {exp_desc = Texp_function {arg_label; arity; param; case; partial}} as exp;
   } ->
     let case = push_defaults exp.exp_loc bindings case partial in
 
@@ -562,7 +563,10 @@ let rec push_defaults loc bindings case partial =
       c_lhs = pat;
       c_guard = None;
       c_rhs =
-        {exp with exp_desc = Texp_function {arg_label; param; case; partial}};
+        {
+          exp with
+          exp_desc = Texp_function {arg_label; arity; param; case; partial};
+        };
     }
   | {
    c_lhs = pat;
