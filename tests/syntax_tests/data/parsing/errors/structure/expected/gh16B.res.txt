@@ -15,12 +15,11 @@ open Ws
 let wss = Server.make { port = 82 }
 let address = wss |.u Server.address
 let log =
-  ((Function$
-      (fun msg ->
-         Js.log
-           (((((({js|> Server: |js})[@res.template ]) ^ msg)[@res.template ])
-               ^ (({js||js})[@res.template ]))[@res.template ])))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]msg ->
+       Js.log
+         (((((({js|> Server: |js})[@res.template ]) ^ msg)[@res.template ]) ^
+             (({js||js})[@res.template ]))[@res.template ]))
 ;;log
     (((((((((((((({js|Running on: |js})[@res.template ]) ^ address.address)
                 [@res.template ]) ^ (({js|:|js})[@res.template ]))
@@ -34,14 +33,13 @@ module ClientSet =
       (Belt.Id.MakeComparable)(struct
                                  type nonrec t = Client.t
                                  let cmp =
-                                   ((Function$
-                                       (fun a ->
-                                          fun b ->
-                                            ((compare
-                                                (a |.u Client.getUniqueId)
-                                                (b |.u Client.getUniqueId))
-                                            [@res.braces ])))
-                                   [@res.arity 2])
+                                   Function$
+                                     (fun [arity:2]a ->
+                                        fun [arity:1]b ->
+                                          ((compare
+                                              (a |.u Client.getUniqueId)
+                                              (b |.u Client.getUniqueId))
+                                          [@res.braces ]))
                                end)
     let empty = Belt.Set.make ~id:(((module T))[@res.namedArgLoc ])
   end

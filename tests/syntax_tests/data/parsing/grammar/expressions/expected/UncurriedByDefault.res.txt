@@ -1,24 +1,21 @@
 let cApp = foo 3
 let uApp = foo 3
-let cFun = ((Function$ (fun x -> 3))[@res.arity 1])
-let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
+let cFun = Function$ (fun [arity:1]x -> 3)
+let uFun = Function$ (fun [arity:1]x -> 3)
 let mixFun =
-  ((Function$
-      (fun a ->
-         fun b ->
-           fun c ->
-             ((Function$
-                 (fun d ->
-                    fun e ->
-                      fun f -> ((Function$ (fun g -> fun h -> 4))
-                        [@res.arity 2])))
-             [@res.arity 3])))
-  [@res.arity 3])
+  Function$
+    (fun [arity:3]a ->
+       fun [arity:2]b ->
+         fun [arity:1]c ->
+           Function$
+             (fun [arity:3]d ->
+                fun [arity:2]e ->
+                  fun [arity:1]f ->
+                    Function$ (fun [arity:2]g -> fun [arity:1]h -> 4)))
 let bracesFun =
-  ((Function$ (fun x -> ((Function$ (fun y -> x + y))[@res.arity 1])))
-  [@res.arity 1])
-let cFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
-let uFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
+  Function$ (fun [arity:1]x -> Function$ (fun [arity:1]y -> x + y))
+let cFun2 = Function$ (fun [arity:2]x -> fun [arity:1]y -> 3)
+let uFun2 = Function$ (fun [arity:2]x -> fun [arity:1]y -> 3)
 type nonrec cTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec mixTyp =
@@ -75,26 +72,24 @@ type nonrec unested =
     function$
 let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
 let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
-let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
-let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
-let _ = preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
-let _ =
-  preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
-    [@res.arity 1])
+let _ = Function$ ((fun [arity:1]x -> 34)[@att ])
+let _ = Function$ ((fun [arity:1]x -> 34)[@res.async ][@att ])
+let _ = preserveAttr (Function$ ((fun [arity:1]x -> 34)[@att ]))
+let _ = preserveAttr (Function$ ((fun [arity:1]x -> 34)[@res.async ][@att ]))
 let t0 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t1 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t2 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t3 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t4 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t5 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t6 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 type nonrec arrowPath1 = (int -> string, [ `Has_arity1 ]) function$
 type nonrec arrowPath2 = (I.t -> string, [ `Has_arity1 ]) function$
 type nonrec arrowPath3 = (int -> string, [ `Has_arity1 ]) function$
@@ -107,31 +102,25 @@ type nonrec callback3 =
   (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
 let cApp = foo 3
 let uApp = foo 3
-let cFun = ((Function$ (fun x -> 3))[@res.arity 1])
-let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
+let cFun = Function$ (fun [arity:1]x -> 3)
+let uFun = Function$ (fun [arity:1]x -> 3)
 let mixFun =
-  ((Function$
-      (fun a ->
-         ((Function$
-             (fun b ->
-                fun c ->
-                  ((Function$
-                      (fun d ->
-                         fun e ->
-                           fun f ->
-                             ((Function$
-                                 (fun g -> ((Function$ (fun h -> 4))
-                                    [@res.arity 1])))
-                             [@res.arity 1])))
-                  [@res.arity 3])))
-         [@res.arity 2])))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]a ->
+       Function$
+         (fun [arity:2]b ->
+            fun [arity:1]c ->
+              Function$
+                (fun [arity:3]d ->
+                   fun [arity:2]e ->
+                     fun [arity:1]f ->
+                       Function$
+                         (fun [arity:1]g -> Function$ (fun [arity:1]h -> 4)))))
 let bracesFun =
-  ((Function$ (fun x -> ((Function$ (fun y -> x + y))[@res.arity 1])))
-  [@res.arity 1])
-let cFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
-let uFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
-let cFun2Dots = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
+  Function$ (fun [arity:1]x -> Function$ (fun [arity:1]y -> x + y))
+let cFun2 = Function$ (fun [arity:2]x -> fun [arity:1]y -> 3)
+let uFun2 = Function$ (fun [arity:2]x -> fun [arity:1]y -> 3)
+let cFun2Dots = Function$ (fun [arity:2]x -> fun [arity:1]y -> 3)
 type nonrec cTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec mixTyp =
@@ -190,20 +179,18 @@ type nonrec unested =
 let pipe1 = 3 |.u f
 let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
 let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
-let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
-let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
-let _ = preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
-let _ =
-  preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
-    [@res.arity 1])
+let _ = Function$ ((fun [arity:1]x -> 34)[@att ])
+let _ = Function$ ((fun [arity:1]x -> 34)[@res.async ][@att ])
+let _ = preserveAttr (Function$ ((fun [arity:1]x -> 34)[@att ]))
+let _ = preserveAttr (Function$ ((fun [arity:1]x -> 34)[@res.async ][@att ]))
 let t0 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t1 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t2 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 let t3 (type a) (type b) =
-  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
+  Function$ (fun [arity:2](l : a list) -> fun [arity:1](x : a) -> x :: l)
 type nonrec arrowPath1 = (int -> string, [ `Has_arity1 ]) function$
 type nonrec arrowPath2 = (I.t -> string, [ `Has_arity1 ]) function$
 type nonrec arrowPath3 = (int -> string, [ `Has_arity1 ]) function$

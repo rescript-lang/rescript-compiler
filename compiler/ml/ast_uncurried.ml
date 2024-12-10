@@ -19,36 +19,14 @@ let uncurried_type ~loc ~arity t_arg =
   let t_arity = arity_type ~loc arity in
   Ast_helper.Typ.constr ~loc {txt = Lident "function$"; loc} [t_arg; t_arity]
 
-let arity_to_attributes arity =
-  [
-    ( Location.mknoloc "res.arity",
-      Parsetree.PStr
-        [
-          Ast_helper.Str.eval
-            (Ast_helper.Exp.constant
-               (Pconst_integer (string_of_int arity, None)));
-        ] );
-  ]
-
-let rec attributes_to_arity (attrs : Parsetree.attributes) =
-  match attrs with
-  | ( {txt = "res.arity"},
-      PStr
-        [
-          {
-            pstr_desc =
-              Pstr_eval
-                ({pexp_desc = Pexp_constant (Pconst_integer (arity, _))}, _);
-          };
-        ] )
-    :: _ ->
-    int_of_string arity
-  | _ :: rest -> attributes_to_arity rest
-  | _ -> assert false
-
 let uncurried_fun ~loc ~arity fun_expr =
+  let fun_expr =
+    match fun_expr.Parsetree.pexp_desc with
+    | Pexp_fun (l, eo, p, e, _) ->
+      {fun_expr with pexp_desc = Pexp_fun (l, eo, p, e, Some arity)}
+    | _ -> assert false
+  in
   Ast_helper.Exp.construct ~loc
-    ~attrs:(arity_to_attributes arity)
     (Location.mknoloc (Longident.Lident "Function$"))
     (Some fun_expr)
 
@@ -59,7 +37,13 @@ let expr_is_uncurried_fun (expr : Parsetree.expression) =
 
 let expr_extract_uncurried_fun (expr : Parsetree.expression) =
   match expr.pexp_desc with
-  | Pexp_construct ({txt = Lident "Function$"}, Some e) -> e
+  | Pexp_construct ({txt = Lident "Function$"}, Some e) ->
+    let () =
+      match e.pexp_desc with
+      | Pexp_fun (_, _, _, _, Some _arity) -> ()
+      | _ -> assert false
+    in
+    e
   | _ -> assert false
 
 let core_type_is_uncurried_fun (typ : Parsetree.core_type) =

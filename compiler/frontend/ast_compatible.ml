@@ -63,11 +63,11 @@ let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
       Pexp_apply (fn, [(Nolabel, arg1); (Nolabel, arg2); (Nolabel, arg3)]);
   }
 
-let fun_ ?(loc = default_loc) ?(attrs = []) pat exp =
+let fun_ ?(loc = default_loc) ?(attrs = []) ~arity pat exp =
   {
     pexp_loc = loc;
     pexp_attributes = attrs;
-    pexp_desc = Pexp_fun (Nolabel, None, pat, exp);
+    pexp_desc = Pexp_fun (Nolabel, None, pat, exp, arity);
   }
 
 let const_exp_string ?(loc = default_loc) ?(attrs = []) ?delimiter (s : string)

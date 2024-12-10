@@ -138,7 +138,7 @@ let iter_expression f e =
     | Pexp_ident _ | Pexp_new _ | Pexp_constant _ ->
       ()
     | Pexp_function pel -> List.iter case pel
-    | Pexp_fun (_, eo, _, e) ->
+    | Pexp_fun (_, eo, _, e, _) ->
       may expr eo;
       expr e
     | Pexp_apply (e, lel) ->
@@ -1914,7 +1914,7 @@ let rec approx_type env sty =
 let rec type_approx env sexp =
   match sexp.pexp_desc with
   | Pexp_let (_, _, e) -> type_approx env e
-  | Pexp_fun (p, _, _, e) ->
+  | Pexp_fun (p, _, _, e, _arity) ->
     let ty = if is_optional p then type_option (newvar ()) else newvar () in
     newty (Tarrow (p, ty, type_approx env e, Cok))
   | Pexp_function ({pc_rhs = e} :: _) ->
@@ -2374,7 +2374,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_fun (l, Some default, spat, sbody) ->
+  | Pexp_fun (l, Some default, spat, sbody, _arity) ->
     assert (is_optional l);
     (* default allowed only with optional argument *)
     let open Ast_helper in
@@ -2414,7 +2414,7 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     in
     type_function ?in_function loc sexp.pexp_attributes env ty_expected l
       [Exp.case pat body]
-  | Pexp_fun (l, None, spat, sbody) ->
+  | Pexp_fun (l, None, spat, sbody, _arity) ->
     type_function ?in_function loc sexp.pexp_attributes env ty_expected l
       [Ast_helper.Exp.case spat sbody]
   | Pexp_function caselist ->
@@ -2531,9 +2531,10 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_construct (({txt = Lident "Function$"} as lid), sarg) ->
+  | Pexp_construct
+      ( ({txt = Lident "Function$"} as lid),
+        (Some {pexp_desc = Pexp_fun (_, _, _, _, Some arity)} as sarg) ) ->
     let state = Warnings.backup () in
-    let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
     let uncurried_typ =
       Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
     in

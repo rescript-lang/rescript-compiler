@@ -64,26 +64,25 @@
   Looks like there might be an expression missing here
 
 let findThreadByIdLinearScan =
-  ((Function$
-      (fun ~threads:((threads)[@res.namedArgLoc ]) ->
-         fun ~id:((id)[@res.namedArgLoc ]) ->
-           ((Js.Array2.findi ThreadsModel.threads
-               ((Function$
-                   (fun thread ->
-                      fun i ->
-                        ((let thisId =
-                            match thread with
-                            | ServerData.OneToOne
-                                { otherPersonIDWhichIsAlsoThreadID } ->
-                                otherPersonIDWhichIsAlsoThreadID
-                            | Group { id } -> id
-                            | Unknown { id } ->
-                                (unknown.id |.u Js.String.make) |.u
-                                  FBID.ofStringUnsafe in
-                          thisId == id)
-                        [@res.braces ])))[@res.arity 2]))
-           [@res.braces ])))
-  [@res.arity 2])
+  Function$
+    (fun [arity:2]~threads:((threads)[@res.namedArgLoc ]) ->
+       fun [arity:1]~id:((id)[@res.namedArgLoc ]) ->
+         ((Js.Array2.findi ThreadsModel.threads
+             (Function$
+                (fun [arity:2]thread ->
+                   fun [arity:1]i ->
+                     ((let thisId =
+                         match thread with
+                         | ServerData.OneToOne
+                             { otherPersonIDWhichIsAlsoThreadID } ->
+                             otherPersonIDWhichIsAlsoThreadID
+                         | Group { id } -> id
+                         | Unknown { id } ->
+                             (unknown.id |.u Js.String.make) |.u
+                               FBID.ofStringUnsafe in
+                       thisId == id)
+                     [@res.braces ]))))
+         [@res.braces ]))
 let x = ((loop 0 (Nil |.u (push doc)))[@res.braces ])
 ;;match stack with
   | Empty -> [%rescript.exprhole ]
