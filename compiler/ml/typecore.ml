@@ -137,7 +137,6 @@ let iter_expression f e =
     | Pexp_extension _ (* we don't iterate under extension point *)
     | Pexp_ident _ | Pexp_new _ | Pexp_constant _ ->
       ()
-    | Pexp_function pel -> List.iter case pel
     | Pexp_fun (_, eo, _, e, _) ->
       may expr eo;
       expr e
@@ -1917,8 +1916,6 @@ let rec type_approx env sexp =
   | Pexp_fun (p, _, _, e, _arity) ->
     let ty = if is_optional p then type_option (newvar ()) else newvar () in
     newty (Tarrow (p, ty, type_approx env e, Cok))
-  | Pexp_function ({pc_rhs = e} :: _) ->
-    newty (Tarrow (Nolabel, newvar (), type_approx env e, Cok))
   | Pexp_match (_, {pc_rhs = e} :: _) -> type_approx env e
   | Pexp_try (e, _) -> type_approx env e
   | Pexp_tuple l -> newty (Ttuple (List.map (type_approx env) l))
@@ -2417,9 +2414,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
   | Pexp_fun (l, None, spat, sbody, _arity) ->
     type_function ?in_function loc sexp.pexp_attributes env ty_expected l
       [Ast_helper.Exp.case spat sbody]
-  | Pexp_function caselist ->
-    type_function ?in_function loc sexp.pexp_attributes env ty_expected Nolabel
-      caselist
   | Pexp_apply (sfunct, sargs) ->
     assert (sargs <> []);
     begin_def ();
