@@ -107,20 +107,17 @@ let compare = (a, b, cmp) =>
 
 let all = options => {
   let acc = []
-  let returnValue = ref(None)
+  let hasNone = ref(false)
   let index = ref(0)
-  while returnValue.contents == None && index.contents < options->Array.length {
+  while hasNone.contents == false && index.contents < options->Array.length {
     switch options->Array.getUnsafe(index.contents) {
-    | None => returnValue.contents = Some(None)
+    | None => hasNone.contents = true
     | Some(value) =>
       acc->Array.push(value)
       index.contents = index.contents + 1
     }
   }
-  switch returnValue.contents {
-  | Some(_) => None
-  | None => Some(acc)
-  }
+  hasNone.contents ? None : Some(acc)
 }
 
 let all2 = ((a, b)) => {
