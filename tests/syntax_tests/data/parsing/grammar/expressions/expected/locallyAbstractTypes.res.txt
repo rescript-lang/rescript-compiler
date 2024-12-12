@@ -1,25 +1,22 @@
 let f (type t) = Function$ (fun [arity:1](xs : t list) -> ())
 let f (type t) =
   Function$
-    (fun [arity:2](xs : t list) -> fun (type s) ->
-       fun [arity:1](ys : s list) -> ())
+    (fun [arity:2](xs : t list) -> fun (type s) -> fun (ys : s list) -> ())
 let f (type t) (type u) (type v) =
   Function$ (fun [arity:1](xs : (t * u * v) list) -> ())
 let f (type t) (type u) (type v) =
   Function$
     (fun [arity:2](xs : (t * u * v) list) -> fun (type s) -> fun (type w) ->
-       fun (type z) -> fun [arity:1](ys : (s * w * z) list) -> ())
+       fun (type z) -> fun (ys : (s * w * z) list) -> ())
 let f = ((fun (type t) -> fun (type u) -> fun (type v) ->
   Function$
     (fun [arity:2](xs : (t * u * v) list) -> ((fun (type s) -> fun (type w)
-       -> fun (type z) -> fun [arity:1](ys : (s * w * z) list) -> ())
-       [@attr2 ])))
+       -> fun (type z) -> fun (ys : (s * w * z) list) -> ())[@attr2 ])))
   [@attr ])
 let f = ((fun (type t) -> ((fun (type s) ->
   Function$
     (fun [arity:2](xs : (t * s) list) -> ((fun (type u) -> ((fun (type v) ->
-       fun (type w) -> fun [arity:1](ys : (u * v * w) list) -> ())[@attr ]))
-       [@attr ])))
+       fun (type w) -> fun (ys : (u * v * w) list) -> ())[@attr ]))[@attr ])))
   [@attr ]))[@attr ])
 let cancel_and_collect_callbacks :
   'a 'u 'c .
@@ -27,5 +24,4 @@ let cancel_and_collect_callbacks :
       [ `Has_arity2 ]) function$
   = fun (type x) ->
   Function$
-    (fun [arity:2]callbacks_accumulator ->
-       fun [arity:1](p : (_, _, c) promise) -> ())
+    (fun [arity:2]callbacks_accumulator -> fun (p : (_, _, c) promise) -> ())

@@ -24,7 +24,7 @@ let l2 =
 let optParam =
   Function$
     (fun [arity:2]?v:((v)[@res.namedArgLoc ]) ->
-       fun [arity:1]() -> ((if v = None then 0 else 1)[@res.ternary ]))
+       fun () -> ((if v = None then 0 else 1)[@res.ternary ]))
 let l1 =
   List.length
     (List.map (Function$ (fun [arity:1]__x -> optParam ?v:__x ()))

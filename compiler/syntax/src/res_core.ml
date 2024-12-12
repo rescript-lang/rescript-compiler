@@ -1596,8 +1596,8 @@ and parse_es6_arrow_expression ?(arrow_attrs = []) ?(arrow_start_pos = None)
             {attrs; label = lbl; expr = default_expr; pat; pos = start_pos} ->
           let loc = mk_loc start_pos end_pos in
           let fun_expr =
-            Ast_helper.Exp.fun_ ~loc ~attrs ~arity:(Some arity) lbl default_expr
-              pat expr
+            Ast_helper.Exp.fun_ ~loc ~attrs ~arity:None lbl default_expr pat
+              expr
           in
           if term_param_num = 1 then
             ( term_param_num - 1,

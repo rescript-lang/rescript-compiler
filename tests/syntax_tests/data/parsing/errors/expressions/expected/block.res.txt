@@ -66,11 +66,11 @@
 let findThreadByIdLinearScan =
   Function$
     (fun [arity:2]~threads:((threads)[@res.namedArgLoc ]) ->
-       fun [arity:1]~id:((id)[@res.namedArgLoc ]) ->
+       fun ~id:((id)[@res.namedArgLoc ]) ->
          ((Js.Array2.findi ThreadsModel.threads
              (Function$
                 (fun [arity:2]thread ->
-                   fun [arity:1]i ->
+                   fun i ->
                      ((let thisId =
                          match thread with
                          | ServerData.OneToOne

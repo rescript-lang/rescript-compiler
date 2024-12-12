@@ -151,12 +151,12 @@ let y =
       [@res.namedArgLoc ]) ~isHistorical:((true)[@res.namedArgLoc ])
       ~onHashChange:((Function$
                         (fun [arity:3]_oldPath ->
-                           fun [arity:2]_oldUrl ->
-                             fun [arity:1]newUrl ->
+                           fun _oldUrl ->
+                             fun newUrl ->
                                updater
                                  (Function$
                                     (fun [arity:2]latestComponentBag ->
-                                       fun [arity:1]_ ->
+                                       fun _ ->
                                          ((let currentActualPath =
                                              Routes.hashOfUri newUrl in
                                            let pathFromState =
@@ -345,10 +345,10 @@ let _ =
   ((StaticDiv.createElement
       ~onClick:((Function$
                    (fun [arity:5]foo ->
-                      fun [arity:4]bar ->
-                        fun [arity:3]baz ->
-                          fun [arity:2]lineBreak ->
-                            fun [arity:1]identifier ->
+                      fun bar ->
+                        fun baz ->
+                          fun lineBreak ->
+                            fun identifier ->
                               ((doStuff foo bar baz; bar lineBreak identifier)
                               [@res.braces ])))
       [@res.namedArgLoc ][@res.braces ]) ~children:[] ())
@@ -369,16 +369,11 @@ let _ =
   ((StaticDivNamed.createElement
       ~onClick:((Function$
                    (fun [arity:6]~foo:((foo)[@res.namedArgLoc ]) ->
-                      fun [arity:5]~bar:((bar)[@res.namedArgLoc ]) ->
-                        fun [arity:4]~baz:((baz)[@res.namedArgLoc ]) ->
-                          fun
-                            [arity:3]~lineBreak:((lineBreak)[@res.namedArgLoc
-                                                              ])
-                            ->
-                            fun
-                              [arity:2]~identifier:((identifier)[@res.namedArgLoc
-                                                                  ])
-                              -> fun [arity:1]() -> bar lineBreak identifier))
+                      fun ~bar:((bar)[@res.namedArgLoc ]) ->
+                        fun ~baz:((baz)[@res.namedArgLoc ]) ->
+                          fun ~lineBreak:((lineBreak)[@res.namedArgLoc ]) ->
+                            fun ~identifier:((identifier)[@res.namedArgLoc ])
+                              -> fun () -> bar lineBreak identifier))
       [@res.namedArgLoc ][@res.braces ]) ~children:[] ())
   [@JSX ])
 let _ =
@@ -392,7 +387,7 @@ let _ =
   ((div
       ~onClick:((Function$
                    (fun [arity:2]e ->
-                      fun [arity:1]e2 -> (((doStuff (); bar foo)
+                      fun e2 -> (((doStuff (); bar foo)
                         [@res.braces ]) : event)))
       [@res.namedArgLoc ][@res.braces ]) ~children:[] ())
   [@JSX ])
@@ -400,10 +395,10 @@ let _ =
   ((div
       ~onClick:((Function$
                    (fun [arity:5]foo ->
-                      fun [arity:4]bar ->
-                        fun [arity:3]baz ->
-                          fun [arity:2]superLongIdent ->
-                            fun [arity:1]breakLine -> (((doStuff (); bar foo)
+                      fun bar ->
+                        fun baz ->
+                          fun superLongIdent ->
+                            fun breakLine -> (((doStuff (); bar foo)
                               [@res.braces ]) : (event * event2 * event3 *
                                                   event4 * event5))))
       [@res.namedArgLoc ][@res.braces ]) ~children:[] ())
@@ -412,10 +407,10 @@ let _ =
   ((div
       ~onClick:((Function$
                    (fun [arity:5]foo ->
-                      fun [arity:4]bar ->
-                        fun [arity:3]baz ->
-                          fun [arity:2]superLongIdent ->
-                            fun [arity:1]breakLine ->
+                      fun bar ->
+                        fun baz ->
+                          fun superLongIdent ->
+                            fun breakLine ->
                               (doStuff () : (event * event2 * event3 * event4
                                               * event5))))
       [@res.namedArgLoc ][@res.braces ]) ~children:[] ())

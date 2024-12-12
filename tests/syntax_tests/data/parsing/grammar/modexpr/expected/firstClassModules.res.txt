@@ -5,7 +5,7 @@ module Device = (val
 let draw_using_device =
   Function$
     (fun [arity:2]device_name ->
-       fun [arity:1]picture ->
+       fun picture ->
          ((let module Device = (val
              (Hashtbl.find devices device_name : (module DEVICE))) in
              Device.draw picture)

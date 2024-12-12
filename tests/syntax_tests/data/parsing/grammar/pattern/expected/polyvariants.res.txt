@@ -70,7 +70,7 @@ let f =
 let cmp =
   Function$
     (fun [arity:2]selectedChoice ->
-       fun [arity:1]value ->
+       fun value ->
          match (selectedChoice, value) with
          | (#a, #a) -> true
          | [|#b;#b|] -> true

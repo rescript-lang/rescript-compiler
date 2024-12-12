@@ -11,5 +11,4 @@
 ;;(Object.keys providers).reduce
     (Function$
        (fun [arity:2]elements ->
-          fun [arity:1]providerId -> ((let x = 1 in let b = 2 in x + b)
-            [@res.braces ])))
+          fun providerId -> ((let x = 1 in let b = 2 in x + b)[@res.braces ])))

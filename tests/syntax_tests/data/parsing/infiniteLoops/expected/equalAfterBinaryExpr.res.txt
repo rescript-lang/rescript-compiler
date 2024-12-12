@@ -13,7 +13,7 @@
 let rec _addLoop =
   Function$
     (fun [arity:2]rbt ->
-       fun [arity:1]currentNode ->
+       fun currentNode ->
          ((if (Some currentNode) == (rbt |.u root)
            then currentNode.color <- Black
            else
@@ -64,7 +64,7 @@ let rec _addLoop =
 let removeNode =
   Function$
     (fun [arity:2]rbt ->
-       fun [arity:1]node ->
+       fun node ->
          ((if nodeToRemove.color == Black
            then
              (if successor.color == Red
