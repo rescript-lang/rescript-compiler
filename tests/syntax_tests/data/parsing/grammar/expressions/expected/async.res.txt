@@ -24,12 +24,9 @@ let async =
   [@res.braces ])
 let f =
   ((if isPositive
-    then
-      Function$ ((fun [arity:2]a -> fun [arity:1]b -> (a + b : int))
-        [@res.async ])
+    then Function$ ((fun [arity:2]a -> fun b -> (a + b : int))[@res.async ])
     else
-      Function$ (((fun [arity:2]c -> fun [arity:1]d -> (c - d : int)))
-        [@res.async ]))
+      Function$ (((fun [arity:2]c -> fun d -> (c - d : int)))[@res.async ]))
   [@res.ternary ])
 let foo = async ~a:((34)[@res.namedArgLoc ])
 let bar =

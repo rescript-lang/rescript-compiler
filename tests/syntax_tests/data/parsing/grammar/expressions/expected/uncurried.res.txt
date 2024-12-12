@@ -1,10 +1,7 @@
-let f = Function$ (fun [arity:2]a -> fun [arity:1]b -> a + b)
-let f = Function$ (fun [arity:2]a -> fun [arity:1]b -> a + b)
+let f = Function$ (fun [arity:2]a -> fun b -> a + b)
+let f = Function$ (fun [arity:2]a -> fun b -> a + b)
 let f =
-  Function$
-    (fun [arity:4]a ->
-       fun [arity:3]b ->
-         fun [arity:2]c -> fun [arity:1]d -> ((a + b) + c) + d)
+  Function$ (fun [arity:4]a -> fun b -> fun c -> fun d -> ((a + b) + c) + d)
 let f =
   Function$
     ((fun [arity:1]a ->
@@ -19,12 +16,10 @@ let f =
 let f =
   Function$
     (fun [arity:4]((a)[@attr ]) ->
-       fun [arity:3]((b)[@attr2 ]) ->
-         fun [arity:2]((c)[@attr3 ]) -> fun [arity:1]((d)[@attr4 ]) -> ())
+       fun ((b)[@attr2 ]) -> fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
 let f =
   Function$
     (fun [arity:4]((a)[@attr ]) ->
-       fun [arity:3]((b)[@attr2 ]) ->
-         fun [arity:2]((c)[@attr3 ]) -> fun [arity:1]((d)[@attr4 ]) -> ())
+       fun ((b)[@attr2 ]) -> fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
 ;;add 1 2
 ;;add 2 3 4 5 6 7 8 9 10

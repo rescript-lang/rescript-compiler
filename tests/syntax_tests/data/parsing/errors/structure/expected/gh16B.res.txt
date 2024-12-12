@@ -35,7 +35,7 @@ module ClientSet =
                                  let cmp =
                                    Function$
                                      (fun [arity:2]a ->
-                                        fun [arity:1]b ->
+                                        fun b ->
                                           ((compare
                                               (a |.u Client.getUniqueId)
                                               (b |.u Client.getUniqueId))

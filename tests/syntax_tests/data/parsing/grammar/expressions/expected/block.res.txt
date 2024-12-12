@@ -84,5 +84,5 @@ let reifyStyle (type a) =
 let calc_fps =
   Function$
     (fun [arity:2]t0 ->
-       fun [arity:1]t1 -> ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)
+       fun t1 -> ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)
          [@res.braces ]))

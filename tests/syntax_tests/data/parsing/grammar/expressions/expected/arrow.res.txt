@@ -3,99 +3,85 @@ let f = Function$ (fun [arity:1]_ -> Js.log {js|test|js})
 let f = Function$ (fun [arity:1]() -> Js.log {js|unit|js})
 let f = Function$ (fun [arity:1](Reducer (inst, comp)) -> inst.render comp)
 let f = Function$ (fun [arity:1](Instance) -> ())
-let f = Function$ (fun [arity:2]a -> fun [arity:1]b -> a + b)
-let f = Function$ (fun [arity:2]1 -> fun [arity:1]2 -> ())
+let f = Function$ (fun [arity:2]a -> fun b -> a + b)
+let f = Function$ (fun [arity:2]1 -> fun 2 -> ())
 let f = Function$ (fun [arity:1]{js|stringPattern|js} -> ())
 let f =
   Function$
-    (fun [arity:2]{js|stringPattern|js} ->
-       fun [arity:1]{js|stringPattern|js} -> ())
+    (fun [arity:2]{js|stringPattern|js} -> fun {js|stringPattern|js} -> ())
 let f = Function$ (fun [arity:1]() -> ())
-let f = Function$ (fun [arity:2](a : int) -> fun [arity:1](b : int) -> a + b)
-let f = Function$ (fun [arity:2]_ -> fun [arity:1]_ -> ())
-let f =
-  Function$
-    (fun [arity:2][|a;b|] -> fun [arity:1][|c;d|] -> ((a + b) + c) + d)
+let f = Function$ (fun [arity:2](a : int) -> fun (b : int) -> a + b)
+let f = Function$ (fun [arity:2]_ -> fun _ -> ())
+let f = Function$ (fun [arity:2][|a;b|] -> fun [|c;d|] -> ((a + b) + c) + d)
 let f = Function$ (fun [arity:1]{ a } -> a + 1)
 let f =
-  Function$
-    (fun [arity:2]{ a; b } -> fun [arity:1]{ c; d } -> ((a + b) + c) + d)
+  Function$ (fun [arity:2]{ a; b } -> fun { c; d } -> ((a + b) + c) + d)
 let f = Function$ (fun [arity:1](a, b) -> a + b)
-let f =
-  Function$ (fun [arity:2](a, b) -> fun [arity:1](c, d) -> ((a + b) + c) + d)
+let f = Function$ (fun [arity:2](a, b) -> fun (c, d) -> ((a + b) + c) + d)
 let f = Function$ (fun [arity:1]exception Terminate -> ())
 let f =
-  Function$
-    (fun [arity:2]exception Terminate -> fun [arity:1]exception Exit -> ())
+  Function$ (fun [arity:2]exception Terminate -> fun exception Exit -> ())
 let f = Function$ (fun [arity:1][] -> ())
 let f = Function$ (fun [arity:1](x::xs) -> x + (xs |.u Belt.List.length))
-let f = Function$ (fun [arity:2](x : int) -> fun [arity:1](y : int) -> x + y)
+let f = Function$ (fun [arity:2](x : int) -> fun (y : int) -> x + y)
 let f =
   Function$
     (fun [arity:2]~a:((a)[@res.namedArgLoc ]) ->
-       fun [arity:1]~b:((b)[@res.namedArgLoc ]) -> a + b)
+       fun ~b:((b)[@res.namedArgLoc ]) -> a + b)
 let f =
   Function$
     (fun [arity:2]~a:((x)[@res.namedArgLoc ]) ->
-       fun [arity:1]~b:((y)[@res.namedArgLoc ]) -> x + y)
+       fun ~b:((y)[@res.namedArgLoc ]) -> x + y)
 let f =
   Function$
     (fun [arity:2]~a:(((x : int))[@res.namedArgLoc ]) ->
-       fun [arity:1]~b:(((y : int))[@res.namedArgLoc ]) -> x + y)
+       fun ~b:(((y : int))[@res.namedArgLoc ]) -> x + y)
 let f =
   Function$
     (fun [arity:3]?a:(((a)[@res.namedArgLoc ])= 1) ->
-       fun [arity:2]?b:(((b)[@res.namedArgLoc ])= 2) ->
-         fun [arity:1]c -> (a + b) + c)
+       fun ?b:(((b)[@res.namedArgLoc ])= 2) -> fun c -> (a + b) + c)
 let f =
   Function$
     (fun [arity:3]?a:(((x)[@res.namedArgLoc ])= 1) ->
-       fun [arity:2]?b:(((y)[@res.namedArgLoc ])= 2) ->
-         fun [arity:1]c -> (x + y) + c)
+       fun ?b:(((y)[@res.namedArgLoc ])= 2) -> fun c -> (x + y) + c)
 let f =
   Function$
     (fun [arity:3]?a:((((x : int))[@res.namedArgLoc ])= 1) ->
-       fun [arity:2]?b:((((y : int))[@res.namedArgLoc ])= 2) ->
-         fun [arity:1]c -> (x + y) + c)
+       fun ?b:((((y : int))[@res.namedArgLoc ])= 2) -> fun c -> (x + y) + c)
 let f =
   Function$
     (fun [arity:3]?a:((a)[@res.namedArgLoc ]) ->
-       fun [arity:2]?b:((b)[@res.namedArgLoc ]) ->
-         fun [arity:1]c ->
+       fun ?b:((b)[@res.namedArgLoc ]) ->
+         fun c ->
            match (a, b) with | (Some a, Some b) -> (a + b) + c | _ -> 3)
 let f =
   Function$
     (fun [arity:3]?a:((x)[@res.namedArgLoc ]) ->
-       fun [arity:2]?b:((y)[@res.namedArgLoc ]) ->
-         fun [arity:1]c ->
+       fun ?b:((y)[@res.namedArgLoc ]) ->
+         fun c ->
            match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3)
 let f =
   Function$
     (fun [arity:3]?a:(((x : int option))[@res.namedArgLoc ]) ->
-       fun [arity:2]?b:(((y : int option))[@res.namedArgLoc ]) ->
-         fun [arity:1]c ->
+       fun ?b:(((y : int option))[@res.namedArgLoc ]) ->
+         fun c ->
            match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3)
-let f = Function$ (fun [arity:2]a -> fun [arity:1]b -> a + b)
+let f = Function$ (fun [arity:2]a -> fun b -> a + b)
 let f = Function$ (fun [arity:1]() -> ())
 let f = Function$ (fun [arity:1]() -> ())
-let f = Function$ (fun [arity:3]a -> fun [arity:2]b -> fun [arity:1]c -> ())
-let f =
-  Function$
-    (fun [arity:4]a ->
-       fun [arity:3]b -> fun [arity:2]c -> fun [arity:1]d -> ())
-let f = Function$ (fun [arity:3]a -> fun [arity:2]b -> fun [arity:1]c -> ())
+let f = Function$ (fun [arity:3]a -> fun b -> fun c -> ())
+let f = Function$ (fun [arity:4]a -> fun b -> fun c -> fun d -> ())
+let f = Function$ (fun [arity:3]a -> fun b -> fun c -> ())
 let f =
   Function$
     (fun [arity:4]~a:((a)[@res.namedArgLoc ][@attr ]) ->
-       fun [arity:3]b ->
-         fun [arity:2]~c:((c)[@res.namedArgLoc ][@attr ]) ->
-           fun [arity:1]d -> ())
+       fun b -> fun ~c:((c)[@res.namedArgLoc ][@attr ]) -> fun d -> ())
 let f =
   Function$
     (fun [arity:4]~a:((a)[@res.namedArgLoc ][@attr ]) ->
-       fun [arity:3]((b)[@attrOnB ]) ->
-         fun [arity:2]~c:((c)[@res.namedArgLoc ][@attr ]) ->
-           fun [arity:1]((d)[@attrOnD ]) -> ())
+       fun ((b)[@attrOnB ]) ->
+         fun ~c:((c)[@res.namedArgLoc ][@attr ]) ->
+           fun ((d)[@attrOnD ]) -> ())
 let f = Function$ (fun [arity:1]list -> list ())
 ;;match colour with
   | Red when

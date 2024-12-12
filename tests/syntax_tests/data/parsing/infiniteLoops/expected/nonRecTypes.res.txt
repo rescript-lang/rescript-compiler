@@ -128,13 +128,13 @@ include
     let has =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]value -> (_findNode rbt (rootGet rbt) value) != None)
+           fun value -> (_findNode rbt (rootGet rbt) value) != None)
     let rec minNode = Function$ (fun [arity:1]node -> [%rescript.exprhole ])
     let findMin = Function$ (fun [arity:1]rbt -> [%rescript.exprhole ])
     let removeNode =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]node ->
+           fun node ->
              ((let nodeToRemove =
                  match ((leftGet node), (rightGet node)) with
                  | (Some _, Some _) ->
@@ -315,7 +315,7 @@ include
     let remove =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]value ->
+           fun value ->
              match _findNode rbt (rootGet rbt) value with
              | Some node ->
                  (removeNode rbt node;
@@ -325,12 +325,12 @@ include
     let findThroughCallback =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]cb ->
+           fun cb ->
              ((let rec findThroughCallback =
                  Function$
                    (fun [arity:3]rbt ->
-                      fun [arity:2]node ->
-                        fun [arity:1]cb ->
+                      fun node ->
+                        fun cb ->
                           match node with
                           | None -> None
                           | Some node ->
@@ -356,9 +356,9 @@ include
     let rec heightOfInterval =
       Function$
         (fun [arity:4]rbt ->
-           fun [arity:3]node ->
-             fun [arity:2]lhs ->
-               fun [arity:1]rhs ->
+           fun node ->
+             fun lhs ->
+               fun rhs ->
                  match node with
                  | None -> 0.
                  | Some n ->
@@ -385,12 +385,11 @@ include
     let heightOfInterval =
       Function$
         (fun [arity:3]rbt ->
-           fun [arity:2]lhs ->
-             fun [arity:1]rhs -> heightOfInterval rbt (rootGet rbt) lhs rhs)
+           fun lhs -> fun rhs -> heightOfInterval rbt (rootGet rbt) lhs rhs)
     let rec firstVisibleNode =
       Function$
         (fun [arity:2]node ->
-           fun [arity:1]offset ->
+           fun offset ->
              match node with
              | None -> None
              | Some node ->
@@ -413,14 +412,14 @@ include
     let lastVisibleNode =
       Function$
         (fun [arity:2]node ->
-           fun [arity:1]offset ->
+           fun offset ->
              match firstVisibleNode node offset with
              | None -> maxNode node
              | first -> first)
     let firstVisible =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]~offset:((offset)[@res.namedArgLoc ]) ->
+           fun ~offset:((offset)[@res.namedArgLoc ]) ->
              match firstVisibleNode (rootGet rbt) offset with
              | None -> None
              | Some node -> Some (valueGet node))
@@ -446,8 +445,7 @@ include
     let rec sumLeftSpine =
       Function$
         (fun [arity:2]node ->
-           fun [arity:1]~fromRightChild:((fromRightChild)[@res.namedArgLoc ])
-             ->
+           fun ~fromRightChild:((fromRightChild)[@res.namedArgLoc ]) ->
              ((let leftSpine =
                  match leftGet node with
                  | None -> heightGet node
@@ -471,11 +469,11 @@ include
     let linearSearch =
       Function$
         (fun [arity:2]rbt ->
-           fun [arity:1]callback ->
+           fun callback ->
              ((let rec find =
                  Function$
                    (fun [arity:2]node ->
-                      fun [arity:1]callback ->
+                      fun callback ->
                         if Js.Internal.fn_run1 callback (valueGet node)
                         then Some (valueGet node)
                         else
@@ -489,9 +487,9 @@ include
     let rec iterate =
       Function$
         (fun [arity:4]~inclusive:((inclusive)[@res.namedArgLoc ]) ->
-           fun [arity:3]firstNode ->
-             fun [arity:2]lastNode ->
-               fun [arity:1]~callback:((callback)[@res.namedArgLoc ]) ->
+           fun firstNode ->
+             fun lastNode ->
+               fun ~callback:((callback)[@res.namedArgLoc ]) ->
                  match firstNode with
                  | None -> ()
                  | Some node ->
@@ -506,10 +504,10 @@ include
     let rec iterateWithY =
       Function$
         (fun [arity:5]?y:((y)[@res.namedArgLoc ]) ->
-           fun [arity:4]~inclusive:((inclusive)[@res.namedArgLoc ]) ->
-             fun [arity:3]firstNode ->
-               fun [arity:2]lastNode ->
-                 fun [arity:1]~callback:((callback)[@res.namedArgLoc ]) ->
+           fun ~inclusive:((inclusive)[@res.namedArgLoc ]) ->
+             fun firstNode ->
+               fun lastNode ->
+                 fun ~callback:((callback)[@res.namedArgLoc ]) ->
                    match firstNode with
                    | None -> ()
                    | Some node ->
@@ -526,7 +524,7 @@ include
     let rec updateSum =
       Function$
         (fun [arity:2]node ->
-           fun [arity:1]~delta:((delta)[@res.namedArgLoc ]) ->
+           fun ~delta:((delta)[@res.namedArgLoc ]) ->
              match node with
              | None -> ()
              | Some node ->
@@ -536,8 +534,8 @@ include
     let setHeight =
       Function$
         (fun [arity:3]rbt ->
-           fun [arity:2]value ->
-             fun [arity:1]~height:((height)[@res.namedArgLoc ]) ->
+           fun value ->
+             fun ~height:((height)[@res.namedArgLoc ]) ->
                match _findNode rbt (rootGet rbt) value with
                | None -> ()
                | Some node ->

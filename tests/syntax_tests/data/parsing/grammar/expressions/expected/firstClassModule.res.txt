@@ -16,13 +16,13 @@ let numbers = [three; (module struct let x = 4 end)]
 let plus =
   Function$
     (fun [arity:2]m1 ->
-       fun [arity:1]m2 -> ((((module
+       fun m2 -> ((((module
          struct let x = (to_int m1) + (to_int m2) end) : (module X_int)))
          [@res.braces ]))
 let plus =
   Function$
     (fun [arity:2]m1 ->
-       fun [arity:1]m2 -> ((module
+       fun m2 -> ((module
          struct let x = (to_int m1) + (to_int m2) end) : (module X_int)))
 let unique_instance = ((module
   struct module Query_handler = Unique
@@ -31,7 +31,7 @@ let build_instance (type a) =
   Function$
     (fun [arity:2]((module Q)  : (module Query_handler with type config = a))
        ->
-       fun [arity:1]config -> ((module
+       fun config -> ((module
          struct module Query_handler = Q
                 let this = Q.create config end) : (module
                                                     Query_handler_instance)))
@@ -39,7 +39,7 @@ let build_instance (type a) =
   Function$
     (fun [arity:2]((module Q)  : (module Query_handler with type config = a))
        ->
-       fun [arity:1]config -> ((((module
+       fun config -> ((((module
          struct module Query_handler = Q
                 let this = Q.create config end) : (module
                                                     Query_handler_instance)))

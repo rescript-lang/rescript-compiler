@@ -32,7 +32,7 @@ module Make(Cmp:sig
     let add =
       Function$
         (fun [arity:2](y : coll) ->
-           fun [arity:1](e : key) ->
+           fun (e : key) ->
              if List.exists (Function$ (fun [arity:1]x -> eq x e)) y
              then y
              else e :: y)

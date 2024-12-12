@@ -52,7 +52,7 @@ let _0 = 0x9A
 let print =
   Function$
     (fun [arity:2]ppf ->
-       fun [arity:1]i ->
+       fun i ->
          match i.stamp with
          | 0 -> fprintf ppf {js|%s!|js} i.name
          | (-1) -> fprintf ppf {js|%s#|js} i.name
