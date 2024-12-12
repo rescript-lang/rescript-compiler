@@ -169,7 +169,7 @@ let init () =
               in
               let to_js_body body =
                 Ast_comb.single_non_rec_value pat_to_js
-                  (Ast_uncurried.uncurried_fun ~loc:Location.none ~arity:1
+                  (Ast_uncurried.uncurried_fun ~arity:1
                      (Ast_compatible.fun_ ~arity:None
                         (Pat.constraint_ (Pat.var pat_param) core_type)
                         body))
@@ -214,7 +214,7 @@ let init () =
                 in
                 let from_js =
                   Ast_comb.single_non_rec_value pat_from_js
-                    (Ast_uncurried.uncurried_fun ~loc:Location.none ~arity:1
+                    (Ast_uncurried.uncurried_fun ~arity:1
                        (Ast_compatible.fun_ ~arity:(Some 1) (Pat.var pat_param)
                           (if create_type then
                              Exp.let_ Nonrecursive
@@ -260,7 +260,7 @@ let init () =
                            app2 unsafe_index_get_exp exp_map exp_param
                          else app1 erase_type_exp exp_param);
                       Ast_comb.single_non_rec_value pat_from_js
-                        (Ast_uncurried.uncurried_fun ~loc:Location.none ~arity:1
+                        (Ast_uncurried.uncurried_fun ~arity:1
                            (Ast_compatible.fun_ ~arity:(Some 1)
                               (Pat.var pat_param)
                               (let result =
