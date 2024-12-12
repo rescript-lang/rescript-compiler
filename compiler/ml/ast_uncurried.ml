@@ -46,6 +46,11 @@ let expr_extract_uncurried_fun (expr : Parsetree.expression) =
     e
   | _ -> assert false
 
+let remove_fun (expr : Parsetree.expression) =
+  match expr.pexp_desc with
+  | Pexp_construct ({txt = Lident "Function$"}, Some e) -> e
+  | _ -> expr
+
 let core_type_is_uncurried_fun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
   | Ptyp_constr ({txt = Lident "function$"}, [{ptyp_desc = Ptyp_arrow _}; _]) ->

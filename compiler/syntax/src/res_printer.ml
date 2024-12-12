@@ -2793,19 +2793,7 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
           None,
           {ppat_desc = Ppat_var {txt = "__x"}},
           {pexp_desc = Pexp_apply _},
-          _ )
-    | Pexp_construct
-        ( {txt = Lident "Function$"},
-          Some
-            {
-              pexp_desc =
-                Pexp_fun
-                  ( Nolabel,
-                    None,
-                    {ppat_desc = Ppat_var {txt = "__x"}},
-                    {pexp_desc = Pexp_apply _},
-                    _ );
-            } ) ->
+          _ ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       print_expression_with_comments ~state
         (ParsetreeViewer.rewrite_underscore_apply e_fun)
