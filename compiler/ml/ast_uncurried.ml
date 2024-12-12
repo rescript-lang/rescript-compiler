@@ -19,31 +19,23 @@ let uncurried_type ~loc ~arity t_arg =
   let t_arity = arity_type ~loc arity in
   Ast_helper.Typ.constr ~loc {txt = Lident "function$"; loc} [t_arg; t_arity]
 
-let uncurried_fun ~loc ~arity fun_expr =
+let uncurried_fun ~arity fun_expr =
   let fun_expr =
     match fun_expr.Parsetree.pexp_desc with
     | Pexp_fun (l, eo, p, e, _) ->
       {fun_expr with pexp_desc = Pexp_fun (l, eo, p, e, Some arity)}
     | _ -> assert false
   in
-  Ast_helper.Exp.construct ~loc
-    (Location.mknoloc (Longident.Lident "Function$"))
-    (Some fun_expr)
+  fun_expr
 
 let expr_is_uncurried_fun (expr : Parsetree.expression) =
   match expr.pexp_desc with
-  | Pexp_construct ({txt = Lident "Function$"}, Some _) -> true
+  | Pexp_fun (_, _, _, _, Some _) -> true
   | _ -> false
 
 let expr_extract_uncurried_fun (expr : Parsetree.expression) =
   match expr.pexp_desc with
-  | Pexp_construct ({txt = Lident "Function$"}, Some e) ->
-    let () =
-      match e.pexp_desc with
-      | Pexp_fun (_, _, _, _, Some _arity) -> ()
-      | _ -> assert false
-    in
-    e
+  | Pexp_fun (_, _, _, _, Some _) -> expr
   | _ -> assert false
 
 let remove_fun (expr : Parsetree.expression) =

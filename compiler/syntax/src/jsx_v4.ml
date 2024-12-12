@@ -1028,8 +1028,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
     in
     let full_expression =
       full_expression
-      |> Ast_uncurried.uncurried_fun ~loc:full_expression.pexp_loc
-           ~arity:(if has_forward_ref then 2 else 1)
+      |> Ast_uncurried.uncurried_fun ~arity:(if has_forward_ref then 2 else 1)
     in
     let full_expression =
       match full_module_name with

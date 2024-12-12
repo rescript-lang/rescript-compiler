@@ -528,7 +528,7 @@ let process_underscore_application args =
       let fun_expr =
         Ast_helper.Exp.fun_ ~loc ~arity:(Some 1) Nolabel None pattern exp_apply
       in
-      Ast_uncurried.uncurried_fun ~loc ~arity:1 fun_expr
+      Ast_uncurried.uncurried_fun ~arity:1 fun_expr
     | None -> exp_apply
   in
   (args, wrap)
@@ -1600,9 +1600,7 @@ and parse_es6_arrow_expression ?(arrow_attrs = []) ?(arrow_start_pos = None)
               expr
           in
           if term_param_num = 1 then
-            ( term_param_num - 1,
-              Ast_uncurried.uncurried_fun ~loc ~arity fun_expr,
-              1 )
+            (term_param_num - 1, Ast_uncurried.uncurried_fun ~arity fun_expr, 1)
           else (term_param_num - 1, fun_expr, arity + 1)
         | TypeParameter {attrs; locs = newtypes; pos = start_pos} ->
           ( term_param_num,

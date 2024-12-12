@@ -20,9 +20,9 @@ let init () =
       {
         structure_gen =
           (fun (tdcls : tdcls) _explict_nonrec ->
-            let handle_uncurried_accessor_tranform ~loc ~arity accessor =
+            let handle_uncurried_accessor_tranform ~arity accessor =
               (* Accessors with no params (arity of 0) are simply values and not functions *)
-              if arity > 0 then Ast_uncurried.uncurried_fun ~loc ~arity accessor
+              if arity > 0 then Ast_uncurried.uncurried_fun ~arity accessor
               else accessor
             in
             let handle_tdcl tdcl =
@@ -52,7 +52,7 @@ let init () =
                             (Exp.ident {txt = Lident txt; loc})
                             {txt = Longident.Lident pld_label; loc})
                       (*arity will alwys be 1 since these are single param functions*)
-                      |> handle_uncurried_accessor_tranform ~arity:1 ~loc))
+                      |> handle_uncurried_accessor_tranform ~arity:1))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
                   (fun
@@ -111,7 +111,7 @@ let init () =
                              Ast_compatible.fun_ ~arity:(Some 1)
                                (Pat.var {loc; txt = var})
                                b)
-                         |> handle_uncurried_accessor_tranform ~loc ~arity))
+                         |> handle_uncurried_accessor_tranform ~arity))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.not_applicable tdcl.ptype_loc deriving_name;
                 []

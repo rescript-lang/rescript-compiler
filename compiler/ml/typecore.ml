@@ -1913,9 +1913,12 @@ let rec approx_type env sty =
 let rec type_approx env sexp =
   match sexp.pexp_desc with
   | Pexp_let (_, _, e) -> type_approx env e
-  | Pexp_fun (p, _, _, e, _arity) ->
+  | Pexp_fun (p, _, _, e, arity) -> (
     let ty = if is_optional p then type_option (newvar ()) else newvar () in
-    newty (Tarrow (p, ty, type_approx env e, Cok))
+    let t = newty (Tarrow (p, ty, type_approx env e, Cok)) in
+    match arity with
+    | None -> t
+    | Some arity -> Ast_uncurried.make_uncurried_type ~env ~arity t)
   | Pexp_match (_, {pc_rhs = e} :: _) -> type_approx env e
   | Pexp_try (e, _) -> type_approx env e
   | Pexp_tuple l -> newty (Ttuple (List.map (type_approx env) l))
@@ -2525,25 +2528,6 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
         exp_attributes = sexp.pexp_attributes;
         exp_env = env;
       }
-  | Pexp_construct
-      ( ({txt = Lident "Function$"} as lid),
-        (Some {pexp_desc = Pexp_fun (_, _, _, _, Some arity)} as sarg) ) ->
-    let state = Warnings.backup () in
-    let uncurried_typ =
-      Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
-    in
-    unify_exp_types loc env uncurried_typ ty_expected;
-    (* Disable Unerasable_optional_argument for uncurried functions *)
-    let unerasable_optional_argument =
-      Warnings.number Unerasable_optional_argument
-    in
-    Warnings.parse_options false
-      ("-" ^ string_of_int unerasable_optional_argument);
-    let exp =
-      type_construct env loc lid sarg uncurried_typ sexp.pexp_attributes
-    in
-    Warnings.restore state;
-    exp
   | Pexp_construct (lid, sarg) ->
     type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant (l, sarg) -> (
@@ -3273,7 +3257,22 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
   | Pexp_extension ext ->
     raise (Error_forward (Builtin_attributes.error_of_extension ext))
 
-and type_function ?in_function ~arity loc attrs env ty_expected l caselist =
+and type_function ?in_function ~arity loc attrs env ty_expected_ l caselist =
+  let state = Warnings.backup () in
+  (* Disable Unerasable_optional_argument for uncurried functions *)
+  let unerasable_optional_argument =
+    Warnings.number Unerasable_optional_argument
+  in
+  Warnings.parse_options false ("-" ^ string_of_int unerasable_optional_argument);
+  let ty_expected =
+    match arity with
+    | None -> ty_expected_
+    | Some arity ->
+      let fun_t = newvar () in
+      let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity fun_t in
+      unify_exp_types loc env uncurried_typ ty_expected_;
+      fun_t
+  in
   let loc_fun, ty_fun =
     match in_function with
     | Some p -> p
@@ -3311,12 +3310,19 @@ and type_function ?in_function ~arity loc attrs env ty_expected l caselist =
     Location.prerr_warning case.c_lhs.pat_loc
       Warnings.Unerasable_optional_argument;
   let param = name_pattern "param" cases in
+  let exp_type = instance env (newgenty (Tarrow (l, ty_arg, ty_res, Cok))) in
+  let exp_type =
+    match arity with
+    | None -> exp_type
+    | Some arity -> Ast_uncurried.make_uncurried_type ~env ~arity exp_type
+  in
+  Warnings.restore state;
   re
     {
       exp_desc = Texp_function {arg_label = l; arity; param; case; partial};
       exp_loc = loc;
       exp_extra = [];
-      exp_type = instance env (newgenty (Tarrow (l, ty_arg, ty_res, Cok)));
+      exp_type;
       exp_attributes = attrs;
       exp_env = env;
     }
