@@ -1988,9 +1988,7 @@ and print_value_binding ~state ~rec_flag (vb : Parsetree.value_binding) cmt_tbl
      };
    pvb_expr = {pexp_desc = Pexp_newtype _} as expr;
   } -> (
-    let _uncurried, _attrs, parameters, return_expr =
-      ParsetreeViewer.fun_expr expr
-    in
+    let _attrs, parameters, return_expr = ParsetreeViewer.fun_expr expr in
     let abstract_type =
       match parameters with
       | [NewTypes {locs = vars}] ->
@@ -2703,9 +2701,7 @@ and print_if_chain ~state pexp_attributes ifs else_expr cmt_tbl =
 
 and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   let print_arrow e =
-    let _, attrs_on_arrow, parameters, return_expr =
-      ParsetreeViewer.fun_expr e
-    in
+    let attrs_on_arrow, parameters, return_expr = ParsetreeViewer.fun_expr e in
     let ParsetreeViewer.{async; attributes = attrs} =
       ParsetreeViewer.process_function_attributes attrs_on_arrow
     in
@@ -3447,7 +3443,7 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
   | _ -> expr_with_await
 
 and print_pexp_fun ~state ~in_callback e cmt_tbl =
-  let _, attrs_on_arrow, parameters, return_expr = ParsetreeViewer.fun_expr e in
+  let attrs_on_arrow, parameters, return_expr = ParsetreeViewer.fun_expr e in
   let ParsetreeViewer.{async; attributes = attrs} =
     ParsetreeViewer.process_function_attributes attrs_on_arrow
   in
