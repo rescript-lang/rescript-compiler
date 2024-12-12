@@ -83,6 +83,7 @@ let unary_expr_operand expr =
   match opt_braces with
   | Some ({Location.loc = braces_loc}, _) -> Braced braces_loc
   | None -> (
+    let expr = Ast_uncurried.remove_fun expr in
     match expr with
     | {Parsetree.pexp_attributes = attrs}
       when match ParsetreeViewer.filter_parsing_attrs attrs with
@@ -110,11 +111,6 @@ let unary_expr_operand expr =
     } ->
       Parenthesized
     | _ when ParsetreeViewer.has_await_attribute expr.pexp_attributes ->
-      Parenthesized
-    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr)}
-      when ParsetreeViewer.is_underscore_apply_sugar expr ->
-      Nothing
-    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some _)} ->
       Parenthesized
     | _ -> Nothing)
 
