@@ -178,7 +178,7 @@ let fun_expr expr =
       collect_new_types (string_loc :: acc) return_expr
     | return_expr -> (List.rev acc, return_expr)
   in
-  let rec collect ~uncurried ~n_fun attrs_before acc expr =
+  let rec collect ~n_fun attrs_before acc expr =
     match expr with
     | {
      pexp_desc =
@@ -189,37 +189,32 @@ let fun_expr expr =
            {pexp_desc = Pexp_apply _},
            _ );
     } ->
-      (uncurried, attrs_before, List.rev acc, rewrite_underscore_apply expr)
+      (attrs_before, List.rev acc, rewrite_underscore_apply expr)
     | {pexp_desc = Pexp_newtype (string_loc, rest); pexp_attributes = attrs} ->
       let string_locs, return_expr = collect_new_types [string_loc] rest in
       let param = NewTypes {attrs; locs = string_locs} in
-      collect ~uncurried ~n_fun attrs_before (param :: acc) return_expr
+      collect ~n_fun attrs_before (param :: acc) return_expr
     | {
-     pexp_desc = Pexp_fun (lbl, default_expr, pattern, return_expr, _);
+     pexp_desc = Pexp_fun (lbl, default_expr, pattern, return_expr, arity);
      pexp_attributes = [];
-    } ->
+    }
+      when arity = None || n_fun = 0 ->
       let parameter =
         Parameter {attrs = []; lbl; default_expr; pat = pattern}
       in
-      collect ~uncurried ~n_fun:(n_fun + 1) attrs_before (parameter :: acc)
-        return_expr
+      collect ~n_fun:(n_fun + 1) attrs_before (parameter :: acc) return_expr
     (* If a fun has an attribute, then it stops here and makes currying.
        i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
-    | {pexp_desc = Pexp_fun _} -> (uncurried, attrs_before, List.rev acc, expr)
+    | {pexp_desc = Pexp_fun _} -> (attrs_before, List.rev acc, expr)
     | expr when n_fun = 0 && Ast_uncurried.expr_is_uncurried_fun expr ->
       let expr = Ast_uncurried.expr_extract_uncurried_fun expr in
-      collect ~uncurried:true ~n_fun attrs_before acc expr
-    | expr -> (uncurried, attrs_before, List.rev acc, expr)
+      collect ~n_fun attrs_before acc expr
+    | expr -> (attrs_before, List.rev acc, expr)
   in
   match expr with
   | {pexp_desc = Pexp_fun _ | Pexp_newtype _} ->
-    collect ~uncurried:false ~n_fun:0 expr.pexp_attributes []
-      {expr with pexp_attributes = []}
-  | _ when Ast_uncurried.expr_is_uncurried_fun expr ->
-    let expr = Ast_uncurried.expr_extract_uncurried_fun expr in
-    collect ~uncurried:true ~n_fun:0 expr.pexp_attributes []
-      {expr with pexp_attributes = []}
-  | _ -> collect ~uncurried:false ~n_fun:0 [] [] expr
+    collect ~n_fun:0 expr.pexp_attributes [] {expr with pexp_attributes = []}
+  | _ -> collect ~n_fun:0 [] [] expr
 
 let process_braces_attr expr =
   match expr.pexp_attributes with

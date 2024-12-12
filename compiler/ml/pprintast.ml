@@ -954,7 +954,7 @@ and binding ctxt f {pvb_pat=p; pvb_expr=x; _} =
       | Pexp_fun (label, eo, p, e, arity) ->
           let arity_str = match arity with
             | None -> ""
-            | Some arity -> "arity:" ^ string_of_int arity
+            | Some arity -> "[arity:" ^ string_of_int arity ^ "]"
           in
           if label=Nolabel then
             pp f "%s%a@ %a" arity_str (simple_pattern ctxt) p pp_print_pexp_function e

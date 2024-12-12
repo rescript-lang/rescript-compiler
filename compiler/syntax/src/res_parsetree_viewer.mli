@@ -61,7 +61,7 @@ type fun_param_kind =
 
 val fun_expr :
   Parsetree.expression ->
-  bool * Parsetree.attributes * fun_param_kind list * Parsetree.expression
+  Parsetree.attributes * fun_param_kind list * Parsetree.expression
 
 (* example:
    *  `makeCoordinate({
