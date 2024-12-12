@@ -167,6 +167,7 @@ let rhs_binary_expr_operand parent_operator rhs =
   | _ -> false
 
 let flatten_operand_rhs parent_operator rhs =
+  let rhs = Ast_uncurried.remove_fun rhs in
   match rhs.Parsetree.pexp_desc with
   | Parsetree.Pexp_apply
       ( {
@@ -179,10 +180,8 @@ let flatten_operand_rhs parent_operator rhs =
     let prec_parent = ParsetreeViewer.operator_precedence parent_operator in
     let prec_child = ParsetreeViewer.operator_precedence operator in
     prec_parent >= prec_child || rhs.pexp_attributes <> []
-  | Pexp_construct ({txt = Lident "Function$"}, Some _) -> true
   | Pexp_constraint ({pexp_desc = Pexp_pack _}, {ptyp_desc = Ptyp_package _}) ->
     false
-  | Pexp_fun _ when ParsetreeViewer.is_underscore_apply_sugar rhs -> false
   | Pexp_fun _ | Pexp_newtype _ | Pexp_setfield _ | Pexp_constraint _ -> true
   | _ when ParsetreeViewer.is_ternary_expr rhs -> true
   | _ -> false
