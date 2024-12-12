@@ -241,6 +241,7 @@ let is_negative_constant constant =
   | _ -> false
 
 let field_expr expr =
+  let expr = Ast_uncurried.remove_fun expr in
   let opt_braces, _ = ParsetreeViewer.process_braces_attr expr in
   match opt_braces with
   | Some ({Location.loc = braces_loc}, _) -> Braced braces_loc
@@ -273,11 +274,6 @@ let field_expr expr =
     } ->
       Parenthesized
     | _ when ParsetreeViewer.has_await_attribute expr.pexp_attributes ->
-      Parenthesized
-    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some expr)}
-      when ParsetreeViewer.is_underscore_apply_sugar expr ->
-      Nothing
-    | {pexp_desc = Pexp_construct ({txt = Lident "Function$"}, Some _)} ->
       Parenthesized
     | _ -> Nothing)
 
