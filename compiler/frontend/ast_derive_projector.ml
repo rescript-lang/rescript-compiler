@@ -108,7 +108,7 @@ let init () =
                              annotate_type
                          in
                          Ext_list.fold_right vars exp (fun var b ->
-                             Ast_compatible.fun_ ~arity:(Some 1)
+                             Ast_compatible.fun_ ~arity:None
                                (Pat.var {loc; txt = var})
                                b)
                          |> handle_uncurried_accessor_tranform ~arity))
