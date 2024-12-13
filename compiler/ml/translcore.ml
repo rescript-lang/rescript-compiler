@@ -699,11 +699,9 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
     match arity with
     | Some arity ->
       let prim =
-        match
-          (Ast_uncurried.type_extract_uncurried_fun
-             (Ctype.expand_head e.exp_env e.exp_type))
-            .desc
-        with
+        let expanded = Ctype.expand_head e.exp_env e.exp_type in
+        let extracted = Ast_uncurried.type_extract_uncurried_fun expanded in
+        match (Btype.repr extracted).desc with
         | Tarrow (Nolabel, t, _, _) -> (
           match (Ctype.expand_head e.exp_env t).desc with
           | Tconstr (Pident {name = "unit"}, [], _) -> Pjs_fn_make_unit
@@ -1052,7 +1050,14 @@ and transl_function loc partial param case =
    c_rhs =
      {
        exp_desc =
-         Texp_function {arg_label = _; param = param'; case; partial = partial'};
+         Texp_function
+           {
+             arg_label = _;
+             arity = None;
+             param = param';
+             case;
+             partial = partial';
+           };
      } as exp;
   }
     when Parmatch.inactive ~partial pat && not (exp |> has_async_attribute) ->
