@@ -24,12 +24,10 @@ function two(x, y) {
   return x + y | 0;
 }
 
-let n = 6;
-
 let Arity = {
   one: one,
   two: two,
-  n: n
+  n: 6
 };
 
 let a = "A";
