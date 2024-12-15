@@ -29,3 +29,5 @@ module Arity = {
 external useState: (unit => 'state) => string = "useState"
 
 let _ = useState(() => 0)
+
+let fpromise = async (promise, _x) => await promise

@@ -35,6 +35,10 @@ let Arity = {
 
 React.useState(() => 0);
 
+async function fpromise(promise, _x) {
+  return await promise;
+}
+
 let a = "A";
 
 let b = "B";
@@ -47,4 +51,5 @@ exports.M = M;
 exports.vv = vv;
 exports.OptionalFields = OptionalFields;
 exports.Arity = Arity;
+exports.fpromise = fpromise;
 /*  Not a pure module */

@@ -303,13 +303,8 @@ module E = struct
                 ] );
           ]
         in
-        let e =
-          {
-            e with
-            pexp_attributes = arity_to_attributes arity @ e.pexp_attributes;
-          }
-        in
         Ast_helper0.Exp.construct
+          ~attrs:(arity_to_attributes arity)
           (Location.mkloc (Longident.Lident "Function$") e.pexp_loc)
           (Some e))
     | Pexp_apply (e, l) ->
