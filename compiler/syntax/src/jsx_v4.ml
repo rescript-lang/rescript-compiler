@@ -642,15 +642,17 @@ let transform_lowercase_call3 ~config mapper jsx_expr_loc call_expr_loc attrs
 let rec recursively_transform_named_args_for_make expr args newtypes core_type =
   match expr.pexp_desc with
   (* TODO: make this show up with a loc. *)
-  | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
+  | Pexp_fun (Labelled "key", _, _, _, _) | Pexp_fun (Optional "key", _, _, _, _)
+    ->
     Jsx_common.raise_error ~loc:expr.pexp_loc
       "Key cannot be accessed inside of a component. Don't worry - you can \
        always key a component from its parent!"
-  | Pexp_fun (Labelled "ref", _, _, _) | Pexp_fun (Optional "ref", _, _, _) ->
+  | Pexp_fun (Labelled "ref", _, _, _, _) | Pexp_fun (Optional "ref", _, _, _, _)
+    ->
     Jsx_common.raise_error ~loc:expr.pexp_loc
       "Ref cannot be passed as a normal prop. Please use `forwardRef` API \
        instead."
-  | Pexp_fun (arg, default, pattern, expression)
+  | Pexp_fun (arg, default, pattern, expression, _arity)
     when is_optional arg || is_labelled arg ->
     let () =
       match (is_optional arg, pattern, default) with
@@ -700,7 +702,8 @@ let rec recursively_transform_named_args_for_make expr args newtypes core_type =
       ( Nolabel,
         _,
         {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
-        _expression ) ->
+        _expression,
+        _arity ) ->
     (args, newtypes, core_type)
   | Pexp_fun
       ( Nolabel,
@@ -709,7 +712,8 @@ let rec recursively_transform_named_args_for_make expr args newtypes core_type =
            ppat_desc =
              Ppat_var {txt} | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _);
          } as pattern),
-        _expression ) ->
+        _expression,
+        _arity ) ->
     if txt = "ref" then
       let type_ =
         match pattern with
@@ -721,7 +725,7 @@ let rec recursively_transform_named_args_for_make expr args newtypes core_type =
         newtypes,
         core_type )
     else (args, newtypes, core_type)
-  | Pexp_fun (Nolabel, _, pattern, _expression) ->
+  | Pexp_fun (Nolabel, _, pattern, _expression, _arity) ->
     Location.raise_errorf ~loc:pattern.ppat_loc
       "React: react.component refs only support plain arguments and type \
        annotations."
@@ -824,14 +828,18 @@ let modified_binding ~binding_loc ~binding_pat_loc ~fn_name binding =
          ( ((Labelled _ | Optional _) as label),
            default,
            pattern,
-           ({pexp_desc = Pexp_fun _} as internal_expression) );
+           ({pexp_desc = Pexp_fun _} as internal_expression),
+           arity );
     } ->
       let wrap, has_forward_ref, exp =
         spelunk_for_fun_expression internal_expression
       in
       ( wrap,
         has_forward_ref,
-        {expression with pexp_desc = Pexp_fun (label, default, pattern, exp)} )
+        {
+          expression with
+          pexp_desc = Pexp_fun (label, default, pattern, exp, arity);
+        } )
     (* let make = (()) => ... *)
     (* let make = (_) => ... *)
     | {
@@ -840,19 +848,26 @@ let modified_binding ~binding_loc ~binding_pat_loc ~fn_name binding =
          ( Nolabel,
            _default,
            {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
-           _internalExpression );
+           _internalExpression,
+           _arity );
     } ->
       ((fun a -> a), false, expression)
     (* let make = (~prop) => ... *)
     | {
      pexp_desc =
        Pexp_fun
-         ((Labelled _ | Optional _), _default, _pattern, _internalExpression);
+         ( (Labelled _ | Optional _),
+           _default,
+           _pattern,
+           _internalExpression,
+           _arity );
     } ->
       ((fun a -> a), false, expression)
     (* let make = (prop) => ... *)
-    | {pexp_desc = Pexp_fun (_nolabel, _default, pattern, _internalExpression)}
-      ->
+    | {
+     pexp_desc =
+       Pexp_fun (_nolabel, _default, pattern, _internalExpression, _arity);
+    } ->
       if !has_application then ((fun a -> a), false, expression)
       else
         Location.raise_errorf ~loc:pattern.ppat_loc
@@ -1001,12 +1016,12 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
       (* let make = React.forwardRef({
            let \"App" = (props, ref) => make({...props, ref: @optional (Js.Nullabel.toOption(ref))})
          })*)
-      Exp.fun_ nolabel None
+      Exp.fun_ ~arity:None nolabel None
         (match core_type_of_attr with
         | None -> make_props_pattern named_type_list
         | Some _ -> make_props_pattern typ_vars_of_core_type)
         (if has_forward_ref then
-           Exp.fun_ nolabel None
+           Exp.fun_ ~arity:None nolabel None
              (Pat.var @@ Location.mknoloc "ref")
              inner_expression
          else inner_expression)
@@ -1055,9 +1070,11 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
           ( _arg_label,
             _default,
             {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
-            expr ) ->
+            expr,
+            _arity ) ->
         (patterns_with_label, patterns_with_nolabel, expr)
-      | Pexp_fun (arg_label, default, ({ppat_loc; ppat_desc} as pattern), expr)
+      | Pexp_fun
+          (arg_label, default, ({ppat_loc; ppat_desc} as pattern), expr, _arity)
         -> (
         let pattern_without_constraint =
           strip_constraint_unpack ~label:(get_label arg_label) pattern
@@ -1117,7 +1134,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
               Pat.constraint_ pattern (ref_type Location.none)
             | _ -> pattern
           in
-          Exp.fun_ Nolabel None pattern expr)
+          Exp.fun_ ~arity:None Nolabel None pattern expr)
         expression patterns_with_nolabel
     in
     (* ({a, b, _}: props<'a, 'b>) *)
@@ -1127,7 +1144,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
       | _ -> Pat.record (List.rev patterns_with_label) Open
     in
     let expression =
-      Exp.fun_ Nolabel None
+      Exp.fun_ ~arity:None Nolabel None
         (Pat.constraint_ record_pattern
            (Typ.constr ~loc:empty_loc
               {txt = Lident "props"; loc = empty_loc}

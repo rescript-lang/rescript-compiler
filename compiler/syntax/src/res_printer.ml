@@ -2792,18 +2792,8 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
         ( Nolabel,
           None,
           {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} )
-    | Pexp_construct
-        ( {txt = Lident "Function$"},
-          Some
-            {
-              pexp_desc =
-                Pexp_fun
-                  ( Nolabel,
-                    None,
-                    {ppat_desc = Ppat_var {txt = "__x"}},
-                    {pexp_desc = Pexp_apply _} );
-            } ) ->
+          {pexp_desc = Pexp_apply _},
+          _ ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       print_expression_with_comments ~state
         (ParsetreeViewer.rewrite_underscore_apply e_fun)
@@ -3392,8 +3382,6 @@ and print_expression ~state (e : Parsetree.expression) cmt_tbl =
           Doc.space;
           print_cases ~state cases cmt_tbl;
         ]
-    | Pexp_function cases ->
-      Doc.concat [Doc.text "x => switch x "; print_cases ~state cases cmt_tbl]
     | Pexp_coerce (expr, (), typ) ->
       let doc_expr = print_expression_with_comments ~state expr cmt_tbl in
       let doc_typ = print_typ_expr ~state typ cmt_tbl in

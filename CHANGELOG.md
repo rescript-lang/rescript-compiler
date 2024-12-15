@@ -12,6 +12,7 @@
 
 # 12.0.0-alpha.6 (Unreleased)
 - Fix exponential notation syntax. https://github.com/rescript-lang/rescript/pull/7174
+- Add `Option.all` & `Result.all` helpers. https://github.com/rescript-lang/rescript/pull/7181
 
 #### :bug: Bug fix
 - Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
@@ -23,7 +24,10 @@
 - Ast cleanup: remove exp object and exp unreachable. https://github.com/rescript-lang/rescript/pull/7189
 - Ast cleanup: explicit representation for optional record fields in types. https://github.com/rescript-lang/rescript/pull/7190 https://github.com/rescript-lang/rescript/pull/7191
 - AST cleanup: first-class expression and patterns for records with optional fields. https://github.com/rescript-lang/rescript/pull/7192
-
+- AST cleanup: Represent the arity of uncurried function definitions directly in the AST. https://github.com/rescript-lang/rescript/pull/7197
+- AST cleanup: Remove Pexp_function from the AST. https://github.com/rescript-lang/rescript/pull/7198
+- Remove unused code from Location and Rescript_cpp modules. https://github.com/rescript-lang/rescript/pull/7150
+- Build with OCaml 5.2.1. https://github.com/rescript-lang/rescript-compiler/pull/7201
 
 # 12.0.0-alpha.5
 

@@ -282,11 +282,10 @@ module E = struct
     | Pexp_let (_r, vbs, e) ->
       List.iter (sub.value_binding sub) vbs;
       sub.expr sub e
-    | Pexp_fun (_lab, def, p, e) ->
+    | Pexp_fun (_lab, def, p, e, _) ->
       iter_opt (sub.expr sub) def;
       sub.pat sub p;
       sub.expr sub e
-    | Pexp_function pel -> sub.cases sub pel
     | Pexp_apply (e, l) ->
       sub.expr sub e;
       List.iter (iter_snd (sub.expr sub)) l

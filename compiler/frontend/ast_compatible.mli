@@ -72,7 +72,12 @@ val apply_labels :
 *)
 
 val fun_ :
-  ?loc:Location.t -> ?attrs:attrs -> pattern -> expression -> expression
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+  arity:int option ->
+  pattern ->
+  expression ->
+  expression
 
 (* val opt_label : string -> Asttypes.arg_label *)
 

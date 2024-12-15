@@ -31,12 +31,10 @@
 
   A labeled parameter starts with a `~`. Did you mean: `~x`?
 
-let f = ((Function$ (fun x -> fun ?(y= 2) -> fun z -> (x + y) + z))
-  [@res.arity 3])
+let f = Function$ (fun [arity:3]x -> fun ?(y= 2) -> fun z -> (x + y) + z)
 let g =
-  ((Function$
-      (fun ~x:((x)[@res.namedArgLoc ]) ->
-         fun ?y:(((y)[@res.namedArgLoc ])= 2) ->
-           fun ~z:((z)[@res.namedArgLoc ]) -> (x + y) + z))
-  [@res.arity 3])
+  Function$
+    (fun [arity:3]~x:((x)[@res.namedArgLoc ]) ->
+       fun ?y:(((y)[@res.namedArgLoc ])= 2) ->
+         fun ~z:((z)[@res.namedArgLoc ]) -> (x + y) + z)
 type nonrec f = (x:int -> y:int -> int, [ `Has_arity2 ]) function$

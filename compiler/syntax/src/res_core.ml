@@ -525,7 +525,9 @@ let process_underscore_application args =
           (Ppat_var (Location.mkloc hidden_var loc))
           ~loc:Location.none
       in
-      let fun_expr = Ast_helper.Exp.fun_ ~loc Nolabel None pattern exp_apply in
+      let fun_expr =
+        Ast_helper.Exp.fun_ ~loc ~arity:(Some 1) Nolabel None pattern exp_apply
+      in
       Ast_uncurried.uncurried_fun ~loc ~arity:1 fun_expr
     | None -> exp_apply
   in
@@ -1594,7 +1596,8 @@ and parse_es6_arrow_expression ?(arrow_attrs = []) ?(arrow_start_pos = None)
             {attrs; label = lbl; expr = default_expr; pat; pos = start_pos} ->
           let loc = mk_loc start_pos end_pos in
           let fun_expr =
-            Ast_helper.Exp.fun_ ~loc ~attrs lbl default_expr pat expr
+            Ast_helper.Exp.fun_ ~loc ~attrs ~arity:None lbl default_expr pat
+              expr
           in
           if term_param_num = 1 then
             ( term_param_num - 1,
@@ -2407,13 +2410,13 @@ and over_parse_constrained_or_coerced_or_arrow_expression p expr =
       let arrow1 =
         Ast_helper.Exp.fun_
           ~loc:(mk_loc expr.pexp_loc.loc_start body.pexp_loc.loc_end)
-          Asttypes.Nolabel None pat
+          ~arity:None Asttypes.Nolabel None pat
           (Ast_helper.Exp.constraint_ body typ)
       in
       let arrow2 =
         Ast_helper.Exp.fun_
           ~loc:(mk_loc expr.pexp_loc.loc_start body.pexp_loc.loc_end)
-          Asttypes.Nolabel None
+          ~arity:None Asttypes.Nolabel None
           (Ast_helper.Pat.constraint_ pat typ)
           body
       in

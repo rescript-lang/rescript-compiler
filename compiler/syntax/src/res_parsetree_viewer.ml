@@ -140,7 +140,8 @@ let rewrite_underscore_apply expr =
       ( Nolabel,
         None,
         {ppat_desc = Ppat_var {txt = "__x"}},
-        ({pexp_desc = Pexp_apply (call_expr, args)} as e) ) ->
+        ({pexp_desc = Pexp_apply (call_expr, args)} as e),
+        _ ) ->
     let new_args =
       List.map
         (fun arg ->
@@ -185,7 +186,8 @@ let fun_expr expr =
          ( Nolabel,
            None,
            {ppat_desc = Ppat_var {txt = "__x"}},
-           {pexp_desc = Pexp_apply _} );
+           {pexp_desc = Pexp_apply _},
+           _ );
     } ->
       (uncurried, attrs_before, List.rev acc, rewrite_underscore_apply expr)
     | {pexp_desc = Pexp_newtype (string_loc, rest); pexp_attributes = attrs} ->
@@ -193,7 +195,7 @@ let fun_expr expr =
       let param = NewTypes {attrs; locs = string_locs} in
       collect ~uncurried ~n_fun attrs_before (param :: acc) return_expr
     | {
-     pexp_desc = Pexp_fun (lbl, default_expr, pattern, return_expr);
+     pexp_desc = Pexp_fun (lbl, default_expr, pattern, return_expr, _);
      pexp_attributes = [];
     } ->
       let parameter =
@@ -231,9 +233,9 @@ let filter_parsing_attrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
-              | "res.namedArgLoc" | "res.ternary" | "res.async" | "res.await"
-              | "res.template" | "res.taggedTemplate" | "res.patVariantSpread"
+              ( "res.braces" | "ns.braces" | "res.iflet" | "res.namedArgLoc"
+              | "res.ternary" | "res.async" | "res.await" | "res.template"
+              | "res.taggedTemplate" | "res.patVariantSpread"
               | "res.dictPattern" );
           },
           _ ) ->
@@ -382,8 +384,8 @@ let has_attributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "res.arity" | "res.braces" | "ns.braces" | "res.iflet"
-              | "res.ternary" | "res.async" | "res.await" | "res.template" );
+              ( "res.braces" | "ns.braces" | "res.iflet" | "res.ternary"
+              | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
         false
@@ -566,8 +568,8 @@ let is_printable_attribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "res.arity" | "res.iflet" | "res.braces" | "ns.braces" | "JSX"
-          | "res.async" | "res.await" | "res.template" | "res.ternary" );
+          ( "res.iflet" | "res.braces" | "ns.braces" | "JSX" | "res.async"
+          | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
     false
@@ -744,7 +746,8 @@ let is_underscore_apply_sugar expr =
       ( Nolabel,
         None,
         {ppat_desc = Ppat_var {txt = "__x"}},
-        {pexp_desc = Pexp_apply _} ) ->
+        {pexp_desc = Pexp_apply _},
+        _ ) ->
     true
   | _ -> false
 

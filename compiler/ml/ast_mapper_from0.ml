@@ -285,18 +285,52 @@ module E = struct
     | Pexp_let (r, vbs, e) ->
       let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs) (sub.expr sub e)
     | Pexp_fun (lab, def, p, e) ->
-      fun_ ~loc ~attrs lab
+      fun_ ~loc ~attrs ~arity:None lab
         (map_opt (sub.expr sub) def)
         (sub.pat sub p) (sub.expr sub e)
-    | Pexp_function pel -> function_ ~loc ~attrs (sub.cases sub pel)
+    | Pexp_function _ -> assert false
     | Pexp_apply (e, l) ->
       apply ~loc ~attrs (sub.expr sub e) (List.map (map_snd (sub.expr sub)) l)
     | Pexp_match (e, pel) ->
       match_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
     | Pexp_try (e, pel) -> try_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
     | Pexp_tuple el -> tuple ~loc ~attrs (List.map (sub.expr sub) el)
-    | Pexp_construct (lid, arg) ->
-      construct ~loc ~attrs (map_loc sub lid) (map_opt (sub.expr sub) arg)
+    | Pexp_construct (lid, arg) -> (
+      let lid1 = map_loc sub lid in
+      let arg1 = map_opt (sub.expr sub) arg in
+      let exp1 = construct ~loc ~attrs lid1 arg1 in
+      match lid.txt with
+      | Lident "Function$" -> (
+        let rec attributes_to_arity (attrs : Parsetree.attributes) =
+          match attrs with
+          | ( {txt = "res.arity"},
+              PStr
+                [
+                  {
+                    pstr_desc =
+                      Pstr_eval
+                        ( {pexp_desc = Pexp_constant (Pconst_integer (arity, _))},
+                          _ );
+                  };
+                ] )
+            :: _ ->
+            int_of_string arity
+          | _ :: rest -> attributes_to_arity rest
+          | [] -> assert false
+        in
+        match arg1 with
+        | Some ({pexp_desc = Pexp_fun (l, eo, p, e, _)} as e1) ->
+          let arity = attributes_to_arity attrs in
+          {
+            e1 with
+            pexp_desc =
+              Pexp_construct
+                ( lid1,
+                  Some {e with pexp_desc = Pexp_fun (l, eo, p, e, Some arity)}
+                );
+          }
+        | _ -> exp1)
+      | _ -> exp1)
     | Pexp_variant (lab, eo) ->
       variant ~loc ~attrs lab (map_opt (sub.expr sub) eo)
     | Pexp_record (l, eo) ->

@@ -535,7 +535,7 @@ and expression ctxt f x =
     pp f "((%a)@,%a)" (expression ctxt) {x with pexp_attributes=[]}
       (attributes ctxt) x.pexp_attributes
   else match x.pexp_desc with
-    | Pexp_function _ | Pexp_fun _ | Pexp_match _ | Pexp_try _ | Pexp_sequence _
+    | Pexp_fun _ | Pexp_match _ | Pexp_try _ | Pexp_sequence _
       when ctxt.pipe || ctxt.semi ->
         paren true (expression reset_ctxt) f x
     | Pexp_ifthenelse _ | Pexp_sequence _ when ctxt.ifthenelse ->
@@ -543,12 +543,14 @@ and expression ctxt f x =
     | Pexp_let _ | Pexp_letmodule _ | Pexp_open _ | Pexp_letexception _
         when ctxt.semi ->
         paren true (expression reset_ctxt) f x
-    | Pexp_fun (l, e0, p, e) ->
-        pp f "@[<2>fun@;%a->@;%a@]"
-          (label_exp ctxt) (l, e0, p)
+    | Pexp_fun (l, e0, p, e, arity) ->
+        let arity_str = match arity with
+          | None -> ""
+          | Some arity -> "[arity:" ^ string_of_int arity ^ "]"
+          in
+        pp f "@[<2>fun@;%s%a->@;%a@]"
+          arity_str (label_exp ctxt) (l, e0, p)
           (expression ctxt) e
-    | Pexp_function l ->
-        pp f "@[<hv>function%a@]" (case_list ctxt) l
     | Pexp_match (e, l) ->
         pp f "@[<hv0>@[<hv0>@[<2>match %a@]@ with@]%a@]"
           (expression reset_ctxt) e (case_list ctxt) l
@@ -949,12 +951,16 @@ and binding ctxt f {pvb_pat=p; pvb_expr=x; _} =
   let rec pp_print_pexp_function f x =
     if x.pexp_attributes <> [] then pp f "=@;%a" (expression ctxt) x
     else match x.pexp_desc with
-      | Pexp_fun (label, eo, p, e) ->
+      | Pexp_fun (label, eo, p, e, arity) ->
+          let arity_str = match arity with
+            | None -> ""
+            | Some arity -> "arity:" ^ string_of_int arity
+          in
           if label=Nolabel then
-            pp f "%a@ %a" (simple_pattern ctxt) p pp_print_pexp_function e
+            pp f "%s%a@ %a" arity_str (simple_pattern ctxt) p pp_print_pexp_function e
           else
-            pp f "%a@ %a"
-              (label_exp ctxt) (label,eo,p) pp_print_pexp_function e
+            pp f "%s%a@ %a"
+              arity_str (label_exp ctxt) (label,eo,p) pp_print_pexp_function e
       | Pexp_newtype (str,e) ->
           pp f "(type@ %s)@ %a" str.txt pp_print_pexp_function e
       | _ -> pp f "=@;%a" (expression ctxt) x

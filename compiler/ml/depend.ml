@@ -218,10 +218,9 @@ let rec add_expr bv exp =
   | Pexp_let (rf, pel, e) ->
     let bv = add_bindings rf bv pel in
     add_expr bv e
-  | Pexp_fun (_, opte, p, e) ->
+  | Pexp_fun (_, opte, p, e, _) ->
     add_opt add_expr bv opte;
     add_expr (add_pattern bv p) e
-  | Pexp_function pel -> add_cases bv pel
   | Pexp_apply (e, el) ->
     add_expr bv e;
     List.iter (fun (_, e) -> add_expr bv e) el

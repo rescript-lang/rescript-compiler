@@ -9,7 +9,6 @@
   Did you forget a `,` here?
 
 ;;(Object.keys providers).reduce
-    ((Function$
-        (fun elements ->
-           fun providerId -> ((let x = 1 in let b = 2 in x + b)
-             [@res.braces ])))[@res.arity 2])
+    (Function$
+       (fun [arity:2]elements ->
+          fun providerId -> ((let x = 1 in let b = 2 in x + b)[@res.braces ])))

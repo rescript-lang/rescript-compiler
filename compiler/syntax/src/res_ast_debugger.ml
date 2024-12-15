@@ -558,10 +558,7 @@ module SexpAst = struct
             Sexp.list (map_empty ~f:value_binding vbs);
             expression expr;
           ]
-      | Pexp_function cases ->
-        Sexp.list
-          [Sexp.atom "Pexp_function"; Sexp.list (map_empty ~f:case cases)]
-      | Pexp_fun (arg_lbl, expr_opt, pat, expr) ->
+      | Pexp_fun (arg_lbl, expr_opt, pat, expr, _) ->
         Sexp.list
           [
             Sexp.atom "Pexp_fun";

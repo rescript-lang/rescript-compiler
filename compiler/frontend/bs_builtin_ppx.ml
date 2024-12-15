@@ -110,9 +110,6 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   | Pexp_constant (Pconst_integer (s, Some 'l')) ->
     {e with pexp_desc = Pexp_constant (Pconst_integer (s, None))}
   (* End rewriting *)
-  | Pexp_function _ ->
-    async_context := false;
-    default_expr_mapper self e
   | _
     when Ast_uncurried.expr_is_uncurried_fun e
          &&
@@ -130,7 +127,7 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
     let body = Ast_async.add_async_attribute ~async body in
     let res = self.expr self body in
     {e with pexp_desc = Pexp_newtype (s, res)}
-  | Pexp_fun (label, _, pat, body) -> (
+  | Pexp_fun (label, _, pat, body, _arity) -> (
     let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
     match Ast_attributes.process_attributes_rev e.pexp_attributes with
     | Nothing, _ ->
@@ -594,7 +591,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
             | Pexp_ifthenelse (_, then_expr, Some else_expr) ->
               aux then_expr @ aux else_expr
             | Pexp_construct (_, Some expr) -> aux expr
-            | Pexp_fun (_, _, _, expr) | Pexp_newtype (_, expr) -> aux expr
+            | Pexp_fun (_, _, _, expr, _) | Pexp_newtype (_, expr) -> aux expr
             | _ -> acc
           in
           aux pvb_expr @ spelunk_vbs acc tl

@@ -315,11 +315,10 @@ module E = struct
            sub vbs)
         (sub.expr sub e)
     (* #end *)
-    | Pexp_fun (lab, def, p, e) ->
-      fun_ ~loc ~attrs lab
+    | Pexp_fun (lab, def, p, e, arity) ->
+      fun_ ~loc ~attrs ~arity lab
         (map_opt (sub.expr sub) def)
         (sub.pat sub p) (sub.expr sub e)
-    | Pexp_function pel -> function_ ~loc ~attrs (sub.cases sub pel)
     | Pexp_apply (e, l) ->
       apply ~loc ~attrs (sub.expr sub e) (List.map (map_snd (sub.expr sub)) l)
     | Pexp_match (e, pel) ->

@@ -1,13 +1,11 @@
 let someDict = Primitive_dict.make [|("one", {js|one|js})|]
 let (({ one?;_})[@res.dictPattern ]) = someDict
 let foo =
-  ((Function$
-      (fun () ->
-         match someDict with
-         | (({ one = {js|one|js};_})[@res.dictPattern ]) ->
-             Js.log {js|one|js}
-         | _ -> Js.log {js|not one|js}))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1]() ->
+       match someDict with
+       | (({ one = {js|one|js};_})[@res.dictPattern ]) -> Js.log {js|one|js}
+       | _ -> Js.log {js|not one|js})
 type json =
   | Boolean of bool 
   | Null [@as null]
@@ -19,23 +17,22 @@ type nonrec user = {
   name: string ;
   age?: float }
 let decodeUser =
-  ((Function$
-      (fun (json : json) ->
-         (((match json with
-            | Object
-                (({ name = String name; age = ageJson;_})[@res.dictPattern ])
-                ->
-                Some
-                  {
-                    name;
-                    age =
-                      ?((match ageJson with
-                         | Number age -> Some age
-                         | _ -> None))
-                  }
-            | _ -> (Js.log {js|Not an object.|js}; None))
-         [@res.braces ]) : user option)))
-  [@res.arity 1])
+  Function$
+    (fun [arity:1](json : json) ->
+       (((match json with
+          | Object
+              (({ name = String name; age = ageJson;_})[@res.dictPattern ])
+              ->
+              Some
+                {
+                  name;
+                  age =
+                    ?((match ageJson with
+                       | Number age -> Some age
+                       | _ -> None))
+                }
+          | _ -> (Js.log {js|Not an object.|js}; None))
+       [@res.braces ]) : user option))
 ;;Js.log
     (decodeUser
        (jsonParse (({js|{"name": "John", "age": 30}|js})[@res.template ])))
