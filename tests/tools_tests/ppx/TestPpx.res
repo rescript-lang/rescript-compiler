@@ -24,3 +24,8 @@ module Arity = {
   let two = (x, y) => x + y
   let n = two(one(1), 5)
 }
+
+@module("react")
+external useState: (unit => 'state) => string = "useState"
+
+let _ = useState(() => 0)
