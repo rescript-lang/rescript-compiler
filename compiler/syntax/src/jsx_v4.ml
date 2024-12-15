@@ -1194,6 +1194,13 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
   else if Jsx_common.has_attr_on_binding Jsx_common.has_attr_with_props binding
   then
     let modified_binding = Jsx_common.remove_arity binding in
+    let modified_binding =
+      {
+        modified_binding with
+        pvb_attributes =
+          modified_binding.pvb_attributes |> List.filter other_attrs_pure;
+      }
+    in
     let fn_name = get_fn_name modified_binding.pvb_pat in
     let internal_fn_name = fn_name ^ "$Internal" in
     let full_module_name =
