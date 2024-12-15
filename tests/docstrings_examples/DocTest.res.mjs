@@ -13,7 +13,6 @@ import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
 import * as Pervasives from "rescript/lib/es6/Pervasives.js";
 import * as Child_process from "child_process";
 import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
-import * as Promises from "node:fs/promises";
 import * as Primitive_exceptions from "rescript/lib/es6/Primitive_exceptions.js";
 import * as RescriptTools_Docgen from "rescript/lib/es6/RescriptTools_Docgen.js";
 
@@ -88,16 +87,13 @@ function createFileInTempDir(id) {
   return Path.join(Os.tmpdir(), id);
 }
 
-async function compileTest(id, code) {
-  let id$1 = id.includes("/") ? id.replace("/", "slash_op") : id;
-  let tempFileName = Path.join(Os.tmpdir(), id$1);
-  await Promises.writeFile(tempFileName + ".res", code);
-  let args = [
-    tempFileName + ".res",
+async function compileTest(param, code) {
+  let match = await run(bscBin, [
     "-w",
-    "-3-109-44"
-  ];
-  let match = await run(bscBin, args, undefined);
+    "-3-109-44",
+    "-e",
+    code
+  ], undefined);
   let stderr = match.stderr;
   if (stderr.length > 0) {
     return {
@@ -186,7 +182,7 @@ function extractDocFromFile(file) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "DocTest.res",
-        199,
+        196,
         9
       ],
       Error: new Error()

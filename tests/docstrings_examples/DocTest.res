@@ -115,15 +115,12 @@ type example = {
 
 let createFileInTempDir = id => Path.join2(OS.tmpdir(), id)
 
-let compileTest = async (~id, ~code) => {
-  let id = id->String.includes("/") ? String.replace(id, "/", "slash_op") : id
-  let tempFileName = createFileInTempDir(id)
-
-  let () = await Fs.writeFile(tempFileName ++ ".res", code)
-
-  let args = [tempFileName ++ ".res", "-w", "-3-109-44"]
-
-  let {stderr, stdout} = await SpawnAsync.run(~command=bscBin, ~args)
+let compileTest = async (~id as _, ~code) => {
+  let {stderr, stdout} = await SpawnAsync.run(
+    ~command=bscBin,
+    // NOTE: warnings argument (-w) should be before eval (-e) argument
+    ~args=["-w", "-3-109-44", "-e", code],
+  )
 
   switch Array.length(stderr) > 0 {
   | true =>
