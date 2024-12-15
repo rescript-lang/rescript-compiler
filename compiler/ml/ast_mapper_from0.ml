@@ -319,16 +319,11 @@ module E = struct
           | [] -> assert false
         in
         match arg1 with
-        | Some ({pexp_desc = Pexp_fun (l, eo, p, e, _)} as e1) ->
+        | Some
+            ({pexp_desc = Pexp_fun (l, eo, p, e, _); pexp_attributes = attrs} as
+             e1) ->
           let arity = attributes_to_arity attrs in
-          {
-            e1 with
-            pexp_desc =
-              Pexp_construct
-                ( lid1,
-                  Some {e with pexp_desc = Pexp_fun (l, eo, p, e, Some arity)}
-                );
-          }
+          {e1 with pexp_desc = Pexp_fun (l, eo, p, e, Some arity)}
         | _ -> exp1)
       | _ -> exp1)
     | Pexp_variant (lab, eo) ->
