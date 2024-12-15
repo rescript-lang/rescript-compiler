@@ -83,7 +83,6 @@ let unary_expr_operand expr =
   match opt_braces with
   | Some ({Location.loc = braces_loc}, _) -> Braced braces_loc
   | None -> (
-    let expr = Ast_uncurried.remove_fun expr in
     match expr with
     | {Parsetree.pexp_attributes = attrs}
       when match ParsetreeViewer.filter_parsing_attrs attrs with
@@ -167,7 +166,6 @@ let rhs_binary_expr_operand parent_operator rhs =
   | _ -> false
 
 let flatten_operand_rhs parent_operator rhs =
-  let rhs = Ast_uncurried.remove_fun rhs in
   match rhs.Parsetree.pexp_desc with
   | Parsetree.Pexp_apply
       ( {
@@ -241,7 +239,6 @@ let is_negative_constant constant =
   | _ -> false
 
 let field_expr expr =
-  let expr = Ast_uncurried.remove_fun expr in
   let opt_braces, _ = ParsetreeViewer.process_braces_attr expr in
   match opt_braces with
   | Some ({Location.loc = braces_loc}, _) -> Braced braces_loc
