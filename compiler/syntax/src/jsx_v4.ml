@@ -1246,7 +1246,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
                        Lident
                          (match rec_flag with
                          | Recursive -> internal_fn_name
-                         | Nonrecursive -> "make");
+                         | Nonrecursive -> fn_name);
                      loc;
                    })
                 [(Nolabel, Exp.ident {txt = Lident "props"; loc})]))
@@ -1259,7 +1259,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
       in
 
       Vb.mk ~attrs:modified_binding.pvb_attributes
-        (Pat.var {txt = "make"; loc})
+        (Pat.var {txt = fn_name; loc})
         internal_expression
     in
 
