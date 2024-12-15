@@ -124,7 +124,9 @@ let merlin_focus = ({loc = Location.none; txt = "merlin.focus"}, PStr [])
 (* Helper method to filter out any attribute that isn't [@react.component] *)
 let other_attrs_pure (loc, _) =
   match loc.txt with
-  | "react.component" | "jsx.component" -> false
+  | "react.component" | "jsx.component" | "react.componentWithProps"
+  | "jsx.componentWithProps" ->
+    false
   | _ -> true
 
 (* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
@@ -941,7 +943,7 @@ let vb_match_expr named_arg_list expr =
   aux (List.rev named_arg_list)
 
 let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
-  if Jsx_common.has_attr_on_binding binding then (
+  if Jsx_common.has_attr_on_binding Jsx_common.has_attr binding then (
     check_multiple_components ~config ~loc:pstr_loc;
     let binding = Jsx_common.remove_arity binding in
     let core_type_of_attr =
@@ -1189,6 +1191,84 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
           Some (binding_wrapper full_expression) )
     in
     (Some props_record_type, binding, new_binding))
+  else if Jsx_common.has_attr_on_binding Jsx_common.has_attr_with_props binding
+  then
+    let modified_binding = Jsx_common.remove_arity binding in
+    let fn_name = get_fn_name modified_binding.pvb_pat in
+    let internal_fn_name = fn_name ^ "$Internal" in
+    let full_module_name =
+      make_module_name file_name config.nested_modules fn_name
+    in
+
+    let is_async =
+      Ext_list.find_first modified_binding.pvb_expr.pexp_attributes
+        Ast_async.is_async
+      |> Option.is_some
+    in
+
+    let make_new_binding ~loc ~full_module_name binding =
+      let props_pattern =
+        match binding.pvb_expr with
+        | {
+         pexp_desc =
+           Pexp_fun (_, _, {ppat_desc = Ppat_constraint (_, typ)}, _, _);
+        } -> (
+          match typ with
+          | {ptyp_desc = Ptyp_constr ({txt = Lident "props"}, args)} ->
+            (* props<_> *)
+            if List.length args > 0 then
+              Pat.constraint_
+                (Pat.var {txt = "props"; loc})
+                (Typ.constr {txt = Lident "props"; loc} [Typ.any ()])
+              (* props *)
+            else
+              Pat.constraint_
+                (Pat.var {txt = "props"; loc})
+                (Typ.constr {txt = Lident "props"; loc} [])
+          | _ -> Pat.var {txt = "props"; loc})
+        | _ -> Pat.var {txt = "props"; loc}
+      in
+
+      let wrapper_expr =
+        Exp.fun_ ~arity:None Nolabel None props_pattern
+          (Jsx_common.async_component ~async:is_async
+             (Exp.apply
+                (Exp.ident
+                   {
+                     txt =
+                       Lident
+                         (match rec_flag with
+                         | Recursive -> internal_fn_name
+                         | Nonrecursive -> "make");
+                     loc;
+                   })
+                [(Nolabel, Exp.ident {txt = Lident "props"; loc})]))
+      in
+
+      let internal_expression =
+        Exp.let_ Nonrecursive
+          [Vb.mk (Pat.var {txt = full_module_name; loc}) wrapper_expr]
+          (Exp.ident {txt = Lident full_module_name; loc})
+      in
+
+      Vb.mk ~attrs:modified_binding.pvb_attributes
+        (Pat.var {txt = "make"; loc})
+        internal_expression
+    in
+
+    let new_binding =
+      match rec_flag with
+      | Recursive -> None
+      | Nonrecursive ->
+        Some
+          (make_new_binding ~loc:empty_loc ~full_module_name modified_binding)
+    in
+    ( None,
+      {
+        binding with
+        pvb_attributes = binding.pvb_attributes |> List.filter other_attrs_pure;
+      },
+      new_binding )
   else (None, binding, None)
 
 let transform_structure_item ~config item =
