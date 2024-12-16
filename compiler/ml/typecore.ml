@@ -2225,12 +2225,12 @@ let unify_exp ?type_clash_context env exp expected_ty =
   let loc = proper_exp_loc exp in
   unify_exp_types ?type_clash_context loc env exp.exp_type expected_ty
 
-let is_ignore funct env =
+let is_ignore ~env ~arity funct =
   match funct.exp_desc with
   | Texp_ident (_, _, {val_kind = Val_prim {Primitive.prim_name = "%ignore"}})
     -> (
     try
-      ignore (filter_arrow env (instance env funct.exp_type) Nolabel);
+      ignore (filter_arrow ~env ~arity (instance env funct.exp_type) Nolabel);
       true
     with Unify _ -> false)
   | _ -> false
@@ -3281,7 +3281,7 @@ and type_function ?in_function ~arity loc attrs env ty_expected_ l caselist =
   let separate = Env.has_local_constraints env in
   if separate then begin_def ();
   let ty_arg, ty_res =
-    try filter_arrow env (instance env ty_expected) l
+    try filter_arrow ~env ~arity (instance env ty_expected) l
     with Unify _ -> (
       match expand_head env ty_expected with
       | {desc = Tarrow _} as ty ->
@@ -3310,7 +3310,9 @@ and type_function ?in_function ~arity loc attrs env ty_expected_ l caselist =
     Location.prerr_warning case.c_lhs.pat_loc
       Warnings.Unerasable_optional_argument;
   let param = name_pattern "param" cases in
-  let exp_type = instance env (newgenty (Tarrow (l, ty_arg, ty_res, Cok, assert false))) in
+  let exp_type =
+    instance env (newgenty (Tarrow (l, ty_arg, ty_res, Cok, arity)))
+  in
   let exp_type =
     match arity with
     | None -> exp_type
@@ -3718,11 +3720,14 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
                  (List.map Printtyp.string_of_label
                     (Ext_list.filter labels (fun x -> x <> Nolabel))) ))
   in
+  if uncurried then force_uncurried_type funct;
+  let ty, max_arity = extract_uncurried_type funct.exp_type in
+  let top_arity = if uncurried then Some max_arity else None in
   match sargs with
   (* Special case for ignore: avoid discarding warning *)
-  | [(Nolabel, sarg)] when is_ignore funct env ->
+  | [(Nolabel, sarg)] when is_ignore ~env ~arity:top_arity funct ->
     let ty_arg, ty_res =
-      filter_arrow env (instance env funct.exp_type) Nolabel
+      filter_arrow ~env ~arity:top_arity (instance env funct.exp_type) Nolabel
     in
     let exp = type_expect env sarg ty_arg in
     (match (expand_head env exp.exp_type).desc with
@@ -3734,9 +3739,6 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     | _ -> ());
     ([(Nolabel, Some exp)], ty_res, false)
   | _ ->
-    if uncurried then force_uncurried_type funct;
-    let ty, max_arity = extract_uncurried_type funct.exp_type in
-    let top_arity = if uncurried then Some max_arity else None in
     let targs, ret_t =
       type_args ?type_clash_context max_arity [] [] ~ty_fun:ty (instance env ty)
         ~sargs ~top_arity

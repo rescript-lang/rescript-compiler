@@ -96,7 +96,6 @@ let make_uncurried_type ~env ~arity (t : Types.type_expr) =
   let t =
     match t.desc with
     | Tarrow (l, t1, t2, c, _) ->
-      let _ = assert false in
       {t with desc = Tarrow (l, t1, t2, c, Some arity)}
     | Tconstr _ -> assert false
     | Tvar _ -> t

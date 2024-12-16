@@ -426,8 +426,8 @@ type response = {
 
 let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
     (arg_types_ty : Ast_core_type.param_type list)
-    (result_type : Ast_core_type.t) : Parsetree.core_type * External_ffi_types.t
-    =
+    (result_type : Ast_core_type.t) :
+    int * Parsetree.core_type * External_ffi_types.t =
   match st with
   | {
    val_name = None;
@@ -610,7 +610,9 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
       (* TODO: do we need do some error checking here *)
       (* result type can not be labeled *)
     in
-    ( Ast_core_type.mk_fn_type new_arg_types_ty result,
+
+    ( List.length new_arg_types_ty,
+      Ast_core_type.mk_fn_type new_arg_types_ty result,
       External_ffi_types.ffi_obj_create arg_kinds )
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with %@obj"
 
@@ -961,10 +963,13 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
   in
   if external_desc.mk_obj then
     (* warn unused attributes here ? *)
-    let new_type, spec =
+    let arity, new_type, spec =
       process_obj loc external_desc prim_name arg_types_ty result_type
     in
-    (build_uncurried_type ~arity:None new_type, spec, unused_attrs, false)
+    ( build_uncurried_type ~arity:(Some arity) new_type,
+      spec,
+      unused_attrs,
+      false )
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length =

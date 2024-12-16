@@ -2758,15 +2758,13 @@ let expand_head_trace env t =
    (2) the original label is not optional
 *)
 
-let filter_arrow env t l =
+let filter_arrow ~env ~arity t l =
   let t = expand_head_trace env t in
   match t.desc with
   | Tvar _ ->
-    let _ = assert false in
-    (* TODO: need the arity from the function definition *)
     let lv = t.level in
     let t1 = newvar2 lv and t2 = newvar2 lv in
-    let t' = newty2 lv (Tarrow (l, t1, t2, Cok, None)) in
+    let t' = newty2 lv (Tarrow (l, t1, t2, Cok, arity)) in
     link_type t t';
     (t1, t2)
   | Tarrow (l', t1, t2, _, _) when Asttypes.same_arg_label l l' -> (t1, t2)
