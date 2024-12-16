@@ -457,7 +457,7 @@ let string1 = "\u00F1"
 let string2 = "\u006E\u0303"
 
 assert(string1 != string2) // true
-assert_eq(String.normalize(string1), String.normalize(string2))
+assertEqual(String.normalize(string1), String.normalize(string2))
 ```
 */
 @send

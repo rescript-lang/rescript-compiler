@@ -41,7 +41,7 @@ TestError("some rejected value")
 ->Promise.reject
 ->Promise.catch(v => {
   switch v {
-  | TestError(msg) => assert_eq(msg, "some rejected value")
+  | TestError(msg) => assertEqual(msg, "some rejected value")
   | _ => assert(false)
   }
   Promise.resolve()

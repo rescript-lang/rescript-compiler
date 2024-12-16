@@ -139,7 +139,7 @@ let getWithDefault: (t<'a>, 'a) => 'a
 ```rescript
 switch Nullable.getExn(%raw("'Hello'")) {
 | exception Invalid_argument(_) => assert(false)
-| value => assert_eq(value, "Hello")
+| value => assertEqual(value, "Hello")
 }
 
 switch Nullable.getExn(%raw("null")) {

@@ -109,7 +109,7 @@ let iterator: Iterator.t<(string, int)> = %raw(`
 iterator
 ->Dict.fromIterator
 ->Dict.valuesToArray
-->assert_eq([1, 2])
+->assertEqual([1, 2])
 ```
 */
 @val

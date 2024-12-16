@@ -81,7 +81,7 @@ Raises an Error in case `None` is provided. Use with care.
 ```rescript
 Some(3)
 ->Belt.Option.getExn
-->assert_eq(3)
+->assertEqual(3)
 
 switch Belt.Option.getExn(None) { // Raises an exception
 | exception _ => assert(true)

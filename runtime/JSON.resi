@@ -317,12 +317,12 @@ let dict = Dict.fromArray([
 dict
 ->JSON.stringifyAny
 ->Option.getUnsafe
-->assert_eq(`{"foo":"bar","hello":"world","someNumber":42}`)
+->assertEqual(`{"foo":"bar","hello":"world","someNumber":42}`)
 
 dict
 ->JSON.stringifyAny(~space=2)
 ->Option.getUnsafe
-->assert_eq(`{
+->assertEqual(`{
   "foo": "bar",
   "hello": "world",
   "someNumber": 42
@@ -331,7 +331,7 @@ dict
 dict
 ->JSON.stringifyAny(~replacer=Keys(["foo", "someNumber"]))
 ->Option.getUnsafe
-->assert_eq(`{"foo":"bar","someNumber":42}`)
+->assertEqual(`{"foo":"bar","someNumber":42}`)
 
 let replacer = JSON.Replacer((_, value) => {
   let decodedValue = value->JSON.Decode.string
@@ -345,10 +345,10 @@ let replacer = JSON.Replacer((_, value) => {
 dict
 ->JSON.stringifyAny(~replacer)
 ->Option.getUnsafe
-->assert_eq(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
+->assertEqual(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
 
 JSON.stringifyAny(() => "hello world")
-->assert_eq(None)
+->assertEqual(None)
 
 // Raise a exception
 switch BigInt.fromInt(0)->JSON.stringifyAny {
@@ -387,13 +387,13 @@ let dict = Dict.fromArray([
 dict
 ->JSON.stringifyAnyWithIndent(2)
 ->Option.getUnsafe
-->assert_eq(`{
+->assertEqual(`{
   "foo": "bar",
   "hello": "world",
   "someNumber": 42
 }`)
 
-JSON.stringifyAny(() => "hello world")->assert_eq(None)
+JSON.stringifyAny(() => "hello world")->assertEqual(None)
 
 switch BigInt.fromInt(0)->JSON.stringifyAny {
 | exception _ => assert(true)
@@ -440,9 +440,9 @@ let replacer = (_, value) => {
 dict
 ->JSON.stringifyAnyWithReplacer(replacer)
 ->Option.getUnsafe
-->assert_eq(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
+->assertEqual(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
 
-JSON.stringifyAny(() => "hello world")->assert_eq(None)
+JSON.stringifyAny(() => "hello world")->assertEqual(None)
 
 switch BigInt.fromInt(0)->JSON.stringifyAny {
 | exception _ => assert(true)
@@ -490,9 +490,9 @@ let replacer = (_, value) => {
 dict
 ->JSON.stringifyAnyWithReplacer(replacer)
 ->Option.getUnsafe
-->assert_eq(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
+->assertEqual(`{"foo":"BAR","hello":"WORLD","someNumber":42}`)
 
-JSON.stringifyAny(() => "hello world")->assert_eq(None)
+JSON.stringifyAny(() => "hello world")->assertEqual(None)
 
 switch BigInt.fromInt(0)->JSON.stringifyAny {
 | exception _ => assert(true)
@@ -531,9 +531,9 @@ let dict = Dict.fromArray([
 
 dict
 ->JSON.stringifyAnyWithFilter(["foo", "someNumber"])
-->assert_eq(`{"foo":"bar","someNumber":42}`)
+->assertEqual(`{"foo":"bar","someNumber":42}`)
 
-JSON.stringifyAny(() => "hello world")->assert_eq(None)
+JSON.stringifyAny(() => "hello world")->assertEqual(None)
 
 switch BigInt.fromInt(0)->JSON.stringifyAny {
 | exception _ => assert(true)
@@ -572,12 +572,12 @@ let dict = Dict.fromArray([
 dict
 ->JSON.stringifyAny
 ->Option.getUnsafe
-->assert_eq(`{"foo":"bar","hello":"world","someNumber":42}`)
+->assertEqual(`{"foo":"bar","hello":"world","someNumber":42}`)
 
 dict
 ->JSON.stringifyAny(~space=2)
 ->Option.getUnsafe
-->assert_eq(`{
+->assertEqual(`{
   "foo": "bar",
   "hello": "world",
   "someNumber": 42
@@ -586,9 +586,9 @@ dict
 dict
 ->JSON.stringifyAny(~replacer=Keys(["foo", "someNumber"]))
 ->Option.getUnsafe
-->assert_eq(`{"foo":"bar","someNumber":42}`)
+->assertEqual(`{"foo":"bar","someNumber":42}`)
 
-JSON.stringifyAny(() => "hello world")->assert_eq(None)
+JSON.stringifyAny(() => "hello world")->assertEqual(None)
 
 switch BigInt.fromInt(0)->JSON.stringifyAny {
 | exception _ => assert(true)

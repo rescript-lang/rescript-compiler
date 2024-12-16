@@ -142,7 +142,7 @@ let processMyAsyncIterator = async () => {
     if done {
       value
       ->Option.isNone
-      ->assert_eq(true)
+      ->assertEqual(true)
     }
   }
 }
@@ -177,7 +177,7 @@ let asyncIterator: AsyncIterator.t<(string, string)> = %raw(`
 let main = async () =>
   await asyncIterator->AsyncIterator.forEach(v => {
     switch v {
-    | Some(("second", value)) => assert_eq(value, "2")
+    | Some(("second", value)) => assertEqual(value, "2")
     | _ => ()
     }
   })

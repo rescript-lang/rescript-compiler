@@ -288,7 +288,7 @@ Belt.HashMap.set(s0, 2, "value2")
 
 s0
 ->Belt.HashMap.reduce("", (acc, _, value) => acc ++ (", " ++ value))
-->assert_eq(", value1, value2")
+->assertEqual(", value1, value2")
 ```
 
 ## More Examples

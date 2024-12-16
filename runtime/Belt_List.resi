@@ -69,7 +69,7 @@ with care.
 ## Examples
 
 ```rescript
-Belt.List.headExn(list{1, 2, 3})->assert_eq(1)
+Belt.List.headExn(list{1, 2, 3})->assertEqual(1)
 
 switch Belt.List.headExn(list{}) { // Raises an Error
 | exception _ => assert(true)
@@ -100,7 +100,7 @@ with care.
 ## Examples
 
 ```rescript
-Belt.List.tailExn(list{1, 2, 3})->assert_eq(list{2, 3})
+Belt.List.tailExn(list{1, 2, 3})->assertEqual(list{2, 3})
 
 switch Belt.List.tailExn(list{}) { // Raises an Error
 | exception _ => assert(true)
@@ -148,7 +148,7 @@ length. Use with care.
 ```rescript
 let abc = list{"A", "B", "C"}
 
-abc->Belt.List.getExn(1)->assert_eq("B")
+abc->Belt.List.getExn(1)->assertEqual("B")
 
 switch abc->Belt.List.getExn(4) { // Raises an Error
 | exception _ => assert(true)
@@ -393,7 +393,7 @@ Equivalent to `Belt.List.map(someList, f)->Belt.List.reverse`
 ```rescript
 list{3, 4, 5}
 ->Belt.List.mapReverse(x => x * x)
-->assert_eq(list{25, 16, 9})
+->assertEqual(list{25, 16, 9})
 ```
 */
 let mapReverse: (t<'a>, 'a => 'b) => t<'b>
@@ -877,7 +877,7 @@ In other words:
 ```rescript
 list{1, 2, 3, 4}
 ->Belt.List.partition(x => x > 2)
-->assert_eq((list{3, 4}, list{1, 2}))
+->assertEqual((list{3, 4}, list{1, 2}))
 ```
 */
 let partition: (t<'a>, 'a => bool) => (t<'a>, t<'a>)

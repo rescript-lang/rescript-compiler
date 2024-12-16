@@ -69,7 +69,7 @@ let iterator: Iterator.t<string> = %raw(`
 iterator
 ->Set.fromIterator
 ->Set.size
-->assert_eq(3)
+->assertEqual(3)
 ```
 */
 @new

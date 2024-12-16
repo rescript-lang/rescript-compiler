@@ -133,7 +133,7 @@ let s0 = Belt.Map.fromArray(~id=module(IntCmp), [(4, "4"), (1, "1"), (2, "2"), (
 
 s0
 ->Belt.Map.findFirstBy((k, _) => k == 4)
-->assert_eq(Some(4, "4"))
+->assertEqual(Some(4, "4"))
 ```
 */
 let findFirstBy: (t<'k, 'v, 'id>, ('k, 'v) => bool) => option<('k, 'v)>

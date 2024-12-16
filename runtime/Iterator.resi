@@ -38,8 +38,8 @@ let iterator: Iterator.t<string> = %raw(`
     return iterator1
   })()
 `)
-(iterator->Iterator.next).done->assert_eq(false)
-(iterator->Iterator.next).done->assert_eq(true)
+(iterator->Iterator.next).done->assertEqual(false)
+(iterator->Iterator.next).done->assertEqual(true)
 ```
 */
 @send
@@ -107,7 +107,7 @@ iterator->Iterator.forEach(v => {
   | other =>
     other
     ->Option.isNone
-    ->assert_eq(true)
+    ->assertEqual(true)
   }
 })
 ```

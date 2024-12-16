@@ -41,7 +41,7 @@ type t<'a, 'b> = result<'a, 'b> =
 ```rescript
 Belt.Result.Ok(42)
 ->Belt.Result.getExn
-->assert_eq(42)
+->assertEqual(42)
 
 
 switch Belt.Result.getExn(Belt.Result.Error("Invalid data")) { // raise a exception

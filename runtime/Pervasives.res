@@ -581,17 +581,17 @@ type nullable<+'a> = Js.nullable<'a>
 let panic = Error.panic
 
 /**
-`assert_eq(a, b)` check if `a` is equal `b`. If not raise a panic exception
+`assertEqual(a, b)` check if `a` is equal `b`. If not raise a panic exception
 
 ## Examples
 
 ```rescript
 list{1, 2}
 ->List.tailExn
-->assert_eq(list{2})
+->assertEqual(list{2})
 ```
 */
-let assert_eq = (a, b) => {
+let assertEqual = (a, b) => {
   if a != b {
     assert(false)
   }

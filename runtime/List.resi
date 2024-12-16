@@ -75,7 +75,7 @@ let head: t<'a> => option<'a>
 ## Examples
 
 ```rescript
-List.headExn(list{1, 2, 3})->assert_eq(1)
+List.headExn(list{1, 2, 3})->assertEqual(1)
 
 switch List.headExn(list{}) {
 | exception Not_found => assert(true)
@@ -110,7 +110,7 @@ let tail: t<'a> => option<t<'a>>
 ## Examples
 
 ```rescript
-List.tailExn(list{1, 2, 3})->assert_eq(list{2, 3})
+List.tailExn(list{1, 2, 3})->assertEqual(list{2, 3})
 
 switch List.tailExn(list{}) {
 | exception Not_found => assert(true)
@@ -163,7 +163,7 @@ let abc = list{"A", "B", "C"}
 
 abc
 ->List.getExn(1)
-->assert_eq("B")
+->assertEqual("B")
 
 switch abc->List.getExn(4) {
 | exception Not_found => assert(true)
