@@ -112,7 +112,7 @@ let Pervasives$1 = {
   int_of_string_opt: Pervasives.int_of_string_opt,
   $at: Pervasives.$at,
   panic: Pervasives.panic,
-  assert_eq: Pervasives.assert_eq
+  assertEqual: Pervasives.assertEqual
 };
 
 function a0(prim) {
