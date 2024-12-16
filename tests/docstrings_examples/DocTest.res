@@ -45,6 +45,9 @@ module Node = {
   module OS = {
     @module("os")
     external tmpdir: unit => string = "tmpdir"
+
+    @module("os")
+    external cpus: unit => array<{.}> = "cpus"
   }
 
   module Util = {
@@ -280,6 +283,23 @@ let getCodeBlocks = example => {
   ->Array.join("\n\n")
 }
 
+let chunkArray = (array, chunkSize) => {
+  let result = []
+
+  let rec loop = (i: int) => {
+    if i < Array.length(array) {
+      Array.push(
+        result,
+        Array.slice(array, ~start=i, ~end=Math.Int.min(i + chunkSize, Array.length(array))),
+      )
+      loop(i + chunkSize)
+    }
+  }
+
+  loop(0)
+  result
+}
+
 let main = async () => {
   let files = Fs.readdirSync("runtime")
 
@@ -327,28 +347,55 @@ let main = async () => {
     (lhs, rhs)
   })
 
-  let runtimeErrors =
-    (await compiled
-    ->Array.filter((({id}, _, _)) => !Array.includes(ignoreRuntimeTests, id))
-    ->Array.map(async ((example, rescriptCode, jsCode)) => {
-      let nodeTests = await jsCode->runtimeTests
-      switch nodeTests {
-      | Ok(_) => None
-      | Error(error) => Some(example, RuntimeError({rescript: rescriptCode, js: jsCode, error}))
-      }
-    })
-    ->Promise.all)
-    ->Array.filterMap(i =>
-      switch i {
-      | Some(i) => Some(i)
-      | None => None
-      }
-    )
+  let batchSize = OS.cpus()->Array.length
+  let batches = chunkArray(compiled, batchSize)
 
-  let allErros = Array.concat(runtimeErrors, compilationErrors)
+  let a =
+    await batches
+    ->Array.map(async t => {
+      (await t
+      ->Array.filter((({id}, _, _)) => !Array.includes(ignoreRuntimeTests, id))
+      ->Array.map(async ((example, rescriptCode, jsCode)) => {
+        let nodeTest = await runtimeTests(jsCode)
+        switch nodeTest {
+        | Ok(_) => None
+        | Error(error) => Some(example, RuntimeError({rescript: rescriptCode, js: jsCode, error}))
+        }
+      })
+      ->Promise.all)
+      ->Array.filterMap(i =>
+        switch i {
+        | Some(i) => Some(i)
+        | None => None
+        }
+      )
+    })
+    ->Promise.all
+
+  let runtimeErrors = Array.flat(a)
+
+  // let runtimeErrors =
+  //   (await compiled
+  //   ->Array.filter((({id}, _, _)) => !Array.includes(ignoreRuntimeTests, id))
+  //   ->Array.map(async ((example, rescriptCode, jsCode)) => {
+  //     let nodeTests = await jsCode->runtimeTests
+  //     switch nodeTests {
+  //     | Ok(_) => None
+  //     | Error(error) => Some(example, RuntimeError({rescript: rescriptCode, js: jsCode, error}))
+  //     }
+  //   })
+  //   ->Promise.all)
+  //   ->Array.filterMap(i =>
+  //     switch i {
+  //     | Some(i) => Some(i)
+  //     | None => None
+  //     }
+  //   )
+
+  let allErrors = Array.concat(runtimeErrors, compilationErrors)
 
   // Print Errors
-  let () = allErros->Array.forEach(((example, errors)) => {
+  let () = allErrors->Array.forEach(((example, errors)) => {
     let red = s => `\x1B[1;31m${s}\x1B[0m`
     let cyan = s => `\x1b[36m${s}\x1b[0m`
     let kind = switch example.kind {
@@ -389,7 +436,7 @@ ${error->indentOutputCode}
     Process.stderrWrite(a)
   })
 
-  let someError = allErros->Array.length > 0
+  let someError = allErrors->Array.length > 0
 
   someError ? 1 : 0
 }

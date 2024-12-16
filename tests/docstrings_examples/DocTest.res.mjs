@@ -182,7 +182,7 @@ function extractDocFromFile(file) {
       RE_EXN_ID: "Assert_failure",
       _1: [
         "DocTest.res",
-        196,
+        199,
         9
       ],
       Error: new Error()
@@ -319,6 +319,23 @@ function getCodeBlocks(example) {
   return Belt_Array.reverse(List.toArray(loop(List.fromArray($$Array.reduce(example.docstrings, [], (acc, docstring) => acc.concat(docstring.split("\n")))), /* [] */0))).join("\n\n");
 }
 
+function chunkArray(array, chunkSize) {
+  let result = [];
+  let loop = _i => {
+    while (true) {
+      let i = _i;
+      if (i >= array.length) {
+        return;
+      }
+      result.push(array.slice(i, Math.min(i + chunkSize | 0, array.length)));
+      _i = i + chunkSize | 0;
+      continue;
+    };
+  };
+  loop(0);
+  return result;
+}
+
 async function main() {
   let files = Fs.readdirSync("runtime");
   let modules = $$Array.reduce(files.filter(f => {
@@ -385,10 +402,12 @@ async function main() {
       rhs
     ];
   });
-  let runtimeErrors = $$Array.filterMap(await Promise.all(match[0].filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
+  let batchSize = Os.cpus().length;
+  let batches = chunkArray(match[0], batchSize);
+  let a = await Promise.all(batches.map(async t => $$Array.filterMap(await Promise.all(t.filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
     let jsCode = param[2];
-    let nodeTests = await runtimeTests(jsCode);
-    if (nodeTests.TAG === "Ok") {
+    let nodeTest = await runtimeTests(jsCode);
+    if (nodeTest.TAG === "Ok") {
       return;
     } else {
       return [
@@ -397,7 +416,7 @@ async function main() {
           TAG: "RuntimeError",
           rescript: param[1],
           js: jsCode,
-          error: nodeTests._0
+          error: nodeTest._0
         }
       ];
     }
@@ -406,9 +425,10 @@ async function main() {
       return i;
     }
     
-  });
-  let allErros = runtimeErrors.concat(match[1]);
-  allErros.forEach(param => {
+  })));
+  let runtimeErrors = a.flat();
+  let allErrors = runtimeErrors.concat(match[1]);
+  allErrors.forEach(param => {
     let errors = param[1];
     let example = param[0];
     let cyan = s => "\x1b[36m" + s + "\x1b[0m";
@@ -424,7 +444,7 @@ async function main() {
     }
     process.stderr.write(a);
   });
-  let someError = allErros.length > 0;
+  let someError = allErrors.length > 0;
   if (someError) {
     return 1;
   } else {
@@ -453,6 +473,7 @@ export {
   extractDocFromFile,
   getExamples,
   getCodeBlocks,
+  chunkArray,
   main,
   exitCode,
 }
