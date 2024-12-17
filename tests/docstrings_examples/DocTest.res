@@ -327,23 +327,90 @@ let main = async () => {
 
   let batchSize = OS.cpus()->Array.length
 
-  let compilationResults =
-    (await modules
-    ->chunkArray(batchSize)
-    ->Array.map(async arrExample => {
-      await arrExample
-      ->Array.map(async example => {
-        let id = example.id->String.replaceAll(".", "__")
-        let rescriptCode = example->getCodeBlocks
-        let jsCode = await compileTest(~id, ~code=rescriptCode)
-        (example, (rescriptCode, jsCode))
-      })
-      ->Promise.all
-    })
-    ->Promise.all)
-    ->Array.flat
+  let chuncks = modules->chunkArray(batchSize)
 
-  // let _ = c > 1
+  let context = ref(0)
+
+  let asyncIterator = AsyncIterator.make(async () => {
+    let currentValue = context.contents
+    // Increment current value
+    context := currentValue + 1
+
+    {
+      AsyncIterator.value: Some(currentValue),
+      done: currentValue == Array.length(chuncks) - 1,
+    }
+  })
+
+  let result = []
+  // await asyncIterator->AsyncIterator.forEach(async value =>
+  //   switch value {
+  //   | Some(value) =>
+  //     let c = Array.getUnsafe(chuncks, value)
+  //
+  //     let a = await c->Array.map(async example => {
+  //       let id = example.id->String.replaceAll(".", "__")
+  //       let rescriptCode = example->getCodeBlocks
+  //       let jsCode = await compileTest(~id, ~code=rescriptCode)
+  //       (example, (rescriptCode, jsCode))
+  //     })->Promise.all
+  //
+  //     Array.push(result, a)->ignore
+  //
+  //   | None => ()
+  //   }
+  // )
+  let processMyAsyncIterator = async () => {
+    // ReScript doesn't have `for ... of` loops, but it's easy to mimic using a while loop.
+    let break = ref(false)
+
+    while !break.contents {
+      // Await the next iterator value
+      let {value, done} = await asyncIterator->AsyncIterator.next
+
+      // Exit the while loop if the iterator says it's done
+      break := done
+
+      // This will log the (int) value of the current async iteration, if a value was returned.
+      switch value {
+      | Some(index) =>
+        let c = Array.getUnsafe(chuncks, index)
+
+        let a =
+          await c
+          ->Array.map(async example => {
+            let id = example.id->String.replaceAll(".", "__")
+            let rescriptCode = example->getCodeBlocks
+            let jsCode = await compileTest(~id, ~code=rescriptCode)
+            (example, (rescriptCode, jsCode))
+          })
+          ->Promise.all
+
+        Array.push(result, a)
+
+      | None => ()
+      }
+    }
+  }
+
+  processMyAsyncIterator()->ignore
+
+  let compilationResults = result->Array.flat
+
+  // let compilationResults =
+  //   (await chuncks
+  //   ->Array.map(async arrExample => {
+  //     await arrExample
+  //     ->Array.map(async example => {
+  //       let id = example.id->String.replaceAll(".", "__")
+  //       let rescriptCode = example->getCodeBlocks
+  //       let jsCode = await compileTest(~id, ~code=rescriptCode)
+  //       (example, (rescriptCode, jsCode))
+  //     })
+  //     ->Promise.all
+  //   })
+  //   ->Promise.all)
+  //   ->Array.flat
 
   // let compilationResults =
   //   await modules

@@ -11,6 +11,7 @@ import * as Belt_List from "rescript/lib/es6/Belt_List.js";
 import * as Nodeutil from "node:util";
 import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
 import * as Pervasives from "rescript/lib/es6/Pervasives.js";
+import * as $$AsyncIterator from "rescript/lib/es6/AsyncIterator.js";
 import * as Child_process from "child_process";
 import * as Primitive_option from "rescript/lib/es6/Primitive_option.js";
 import * as Primitive_exceptions from "rescript/lib/es6/Primitive_exceptions.js";
@@ -362,18 +363,46 @@ async function main() {
     }
   }).map(f => getExamples(extractDocFromFile(Path.join("runtime", f)))).flat();
   let batchSize = Os.cpus().length;
-  let compilationResults = (await Promise.all(chunkArray(modules, batchSize).map(async arrExample => await Promise.all(arrExample.map(async example => {
-    let id = example.id.replaceAll(".", "__");
-    let rescriptCode = getCodeBlocks(example);
-    let jsCode = await compileTest(id, rescriptCode);
-    return [
-      example,
-      [
-        rescriptCode,
-        jsCode
-      ]
-    ];
-  }))))).flat();
+  let chuncks = chunkArray(modules, batchSize);
+  let context = {
+    contents: 0
+  };
+  let asyncIterator = $$AsyncIterator.make(async () => {
+    let currentValue = context.contents;
+    context.contents = currentValue + 1 | 0;
+    return {
+      done: currentValue === (chuncks.length - 1 | 0),
+      value: currentValue
+    };
+  });
+  let result = [];
+  let processMyAsyncIterator = async () => {
+    let $$break = false;
+    while (!$$break) {
+      let match = await asyncIterator.next();
+      let value = match.value;
+      $$break = match.done;
+      if (value !== undefined) {
+        let c = chuncks[value];
+        let a = await Promise.all(c.map(async example => {
+          let id = example.id.replaceAll(".", "__");
+          let rescriptCode = getCodeBlocks(example);
+          let jsCode = await compileTest(id, rescriptCode);
+          return [
+            example,
+            [
+              rescriptCode,
+              jsCode
+            ]
+          ];
+        }));
+        result.push(a);
+      }
+      
+    };
+  };
+  processMyAsyncIterator();
+  let compilationResults = result.flat();
   let match = $$Array.reduce(compilationResults, [
     [],
     []
