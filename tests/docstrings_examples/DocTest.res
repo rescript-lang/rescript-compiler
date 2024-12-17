@@ -308,6 +308,7 @@ let main = async () => {
     // Ignore Js modules and RescriptTools for now
     ->Array.filter(f => !String.startsWith(f, "Js") && !String.startsWith(f, "RescriptTools"))
     ->Array.filter(f => f->String.endsWith(".res") || f->String.endsWith(".resi"))
+    // ->Array.filter(f => f === "String.resi")
     ->Array.reduce([], (acc, cur) => {
       let isInterface = cur->String.endsWith(".resi")
 
@@ -327,7 +328,11 @@ let main = async () => {
 
   let batchSize = OS.cpus()->Array.length
 
+  // Console.log2("module length", modules->Array.length)
   let chuncks = modules->chunkArray(batchSize)
+
+  // Console.log2("chuncks length", chuncks->Array.length)
+  // Console.log2("chunck part size", chuncks->Array.map(f => f->Array.length))
 
   let context = ref(0)
 
@@ -338,7 +343,7 @@ let main = async () => {
 
     {
       AsyncIterator.value: Some(currentValue),
-      done: currentValue == Array.length(chuncks) - 1,
+      done: currentValue == Array.length(chuncks) - 1
     }
   })
 
@@ -360,6 +365,7 @@ let main = async () => {
   //   | None => ()
   //   }
   // )
+
   let processMyAsyncIterator = async () => {
     // ReScript doesn't have `for ... of` loops, but it's easy to mimic using a while loop.
     let break = ref(false)
@@ -375,7 +381,6 @@ let main = async () => {
       switch value {
       | Some(index) =>
         let c = Array.getUnsafe(chuncks, index)
-
         let a =
           await c
           ->Array.map(async example => {
@@ -393,7 +398,7 @@ let main = async () => {
     }
   }
 
-  processMyAsyncIterator()->ignore
+  let () = await processMyAsyncIterator()
 
   let compilationResults = result->Array.flat
 

@@ -401,7 +401,7 @@ async function main() {
       
     };
   };
-  processMyAsyncIterator();
+  await processMyAsyncIterator();
   let compilationResults = result.flat();
   let match = $$Array.reduce(compilationResults, [
     [],
