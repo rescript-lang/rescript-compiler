@@ -362,7 +362,7 @@ async function main() {
       return acc.concat([cur]);
     }
   }).map(f => getExamples(extractDocFromFile(Path.join("runtime", f)))).flat();
-  let batchSize = (Os.cpus().length << 2);
+  let batchSize = (Os.cpus().length << 1);
   let chuncks = chunkArray(modules, batchSize);
   let context = {
     contents: 0

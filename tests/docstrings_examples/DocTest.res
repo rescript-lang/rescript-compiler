@@ -326,7 +326,7 @@ let main = async () => {
     ->Array.map(f => extractDocFromFile(Path.join(["runtime", f]))->getExamples)
     ->Array.flat
 
-  let batchSize = OS.cpus()->Array.length * 4
+  let batchSize = OS.cpus()->Array.length * 2
 
   // Console.log2("module length", modules->Array.length)
   let chuncks = modules->chunkArray(batchSize)
