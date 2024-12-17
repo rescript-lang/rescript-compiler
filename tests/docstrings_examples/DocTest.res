@@ -343,7 +343,7 @@ let main = async () => {
 
     {
       AsyncIterator.value: Some(currentValue),
-      done: currentValue == Array.length(chuncks) - 1
+      done: currentValue == Array.length(chuncks) - 1,
     }
   })
 
