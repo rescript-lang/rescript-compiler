@@ -45,6 +45,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Default is too slow, 256
+      - name: Increase file descriptors limit (macOS only)
+        if: runner.os == 'macOS'
+        run: sudo launchctl limit maxfiles 1024 10000
+
       - name: Restore build cache
         id: build-cache
         uses: actions/cache@v4
