@@ -402,6 +402,7 @@ async function main() {
     };
   };
   await processMyAsyncIterator();
+  console.log("ReScript compilation finished");
   let compilationResults = result.flat();
   let match = $$Array.reduce(compilationResults, [
     [],

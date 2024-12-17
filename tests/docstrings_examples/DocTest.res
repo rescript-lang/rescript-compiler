@@ -400,6 +400,8 @@ let main = async () => {
 
   let () = await processMyAsyncIterator()
 
+  Console.log("ReScript compilation finished")
+
   let compilationResults = result->Array.flat
 
   // let compilationResults =
