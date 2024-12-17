@@ -325,15 +325,35 @@ let main = async () => {
     ->Array.map(f => extractDocFromFile(Path.join(["runtime", f]))->getExamples)
     ->Array.flat
 
+  let batchSize = OS.cpus()->Array.length
+
   let compilationResults =
-    await modules
-    ->Array.map(async example => {
-      let id = example.id->String.replaceAll(".", "__")
-      let rescriptCode = example->getCodeBlocks
-      let jsCode = await compileTest(~id, ~code=rescriptCode)
-      (example, (rescriptCode, jsCode))
+    (await modules
+    ->chunkArray(batchSize)
+    ->Array.map(async arrExample => {
+      await arrExample
+      ->Array.map(async example => {
+        let id = example.id->String.replaceAll(".", "__")
+        let rescriptCode = example->getCodeBlocks
+        let jsCode = await compileTest(~id, ~code=rescriptCode)
+        (example, (rescriptCode, jsCode))
+      })
+      ->Promise.all
     })
-    ->Promise.all
+    ->Promise.all)
+    ->Array.flat
+
+  // let _ = c > 1
+
+  // let compilationResults =
+  //   await modules
+  //   ->Array.map(async example => {
+  //     let id = example.id->String.replaceAll(".", "__")
+  //     let rescriptCode = example->getCodeBlocks
+  //     let jsCode = await compileTest(~id, ~code=rescriptCode)
+  //     (example, (rescriptCode, jsCode))
+  //   })
+  //   ->Promise.all
 
   let (compiled, compilationErrors) = compilationResults->Array.reduce(([], []), (
     acc,
@@ -347,7 +367,6 @@ let main = async () => {
     (lhs, rhs)
   })
 
-  let batchSize = OS.cpus()->Array.length
   let batches = chunkArray(compiled, batchSize)
 
   let a =

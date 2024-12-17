@@ -361,7 +361,8 @@ async function main() {
       return acc.concat([cur]);
     }
   }).map(f => getExamples(extractDocFromFile(Path.join("runtime", f)))).flat();
-  let compilationResults = await Promise.all(modules.map(async example => {
+  let batchSize = Os.cpus().length;
+  let compilationResults = (await Promise.all(chunkArray(modules, batchSize).map(async arrExample => await Promise.all(arrExample.map(async example => {
     let id = example.id.replaceAll(".", "__");
     let rescriptCode = getCodeBlocks(example);
     let jsCode = await compileTest(id, rescriptCode);
@@ -372,7 +373,7 @@ async function main() {
         jsCode
       ]
     ];
-  }));
+  }))))).flat();
   let match = $$Array.reduce(compilationResults, [
     [],
     []
@@ -402,7 +403,6 @@ async function main() {
       rhs
     ];
   });
-  let batchSize = Os.cpus().length;
   let batches = chunkArray(match[0], batchSize);
   let a = await Promise.all(batches.map(async t => $$Array.filterMap(await Promise.all(t.filter(param => !ignoreRuntimeTests.includes(param[0].id)).map(async param => {
     let jsCode = param[2];
