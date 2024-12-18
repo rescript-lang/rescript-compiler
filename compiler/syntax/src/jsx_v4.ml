@@ -1267,10 +1267,7 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
                 [(Nolabel, Exp.ident {txt = Lident "props"; loc})]))
       in
 
-      let wrapper_expr =
-        Ast_uncurried.uncurried_fun ~loc:wrapper_expr.pexp_loc ~arity:1
-          wrapper_expr
-      in
+      let wrapper_expr = Ast_uncurried.uncurried_fun ~arity:1 wrapper_expr in
 
       let internal_expression =
         Exp.let_ Nonrecursive
