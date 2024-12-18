@@ -15,9 +15,14 @@ let has_attr (loc, _) =
   | "react.component" | "jsx.component" -> true
   | _ -> false
 
+let has_attr_with_props (loc, _) =
+  match loc.txt with
+  | "react.componentWithProps" | "jsx.componentWithProps" -> true
+  | _ -> false
+
 (* Iterate over the attributes and try to find the [@react.component] attribute *)
-let has_attr_on_binding {pvb_attributes} =
-  List.find_opt has_attr pvb_attributes <> None
+let has_attr_on_binding pred {pvb_attributes} =
+  List.find_opt pred pvb_attributes <> None
 
 let core_type_of_attrs attributes =
   List.find_map
