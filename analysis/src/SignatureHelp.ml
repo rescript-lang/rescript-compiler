@@ -118,7 +118,7 @@ let extractParameters ~signature ~typeStrForParser ~labelPrefixLen =
                  ptyp_desc =
                    Ptyp_constr
                      ( {txt = Lident "function$"},
-                       [({ptyp_desc = Ptyp_arrow _} as expr); _] );
+                       [({ptyp_desc = Ptyp_arrow _} as expr)] );
                };
            };
      } );

@@ -231,8 +231,7 @@ let translate_constr ~config ~params_translation ~(path : Path.t) ~type_env =
     {param_translation with type_ = Promise param_translation.type_}
   | (["Js"; "Dict"; "t"] | ["Dict"; "t"] | ["dict"]), [param_translation] ->
     {param_translation with type_ = Dict param_translation.type_}
-  | ["function$"], [arg; _arity] ->
-    {dependencies = arg.dependencies; type_ = arg.type_}
+  | ["function$"], [arg] -> {dependencies = arg.dependencies; type_ = arg.type_}
   | _ -> default_case ()
 
 type process_variant = {

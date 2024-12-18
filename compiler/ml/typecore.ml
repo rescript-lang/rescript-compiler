@@ -3530,7 +3530,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
   let has_uncurried_type funct =
     let t = funct.exp_type in
     match (expand_head env t).desc with
-    | Tconstr (Pident {name = "function$"}, [t; _t_arity], _) ->
+    | Tconstr (Pident {name = "function$"}, [t], _) ->
       let arity =
         match Ast_uncurried.tarrow_to_arity_opt t with
         | Some arity -> arity
@@ -4333,10 +4333,7 @@ let report_error env ppf = function
       "This function is a curried function where an uncurried function is \
        expected"
   | Expr_type_clash
-      ( ( _,
-          {
-            desc = Tconstr (Pident {name = "function$"}, [{desc = Tvar _}; _], _);
-          } )
+      ( (_, {desc = Tconstr (Pident {name = "function$"}, [{desc = Tvar _}], _)})
         :: (_, {desc = Tarrow _})
         :: _,
         _ ) ->
@@ -4349,7 +4346,7 @@ let report_error env ppf = function
             desc =
               Tconstr
                 ( Pident {name = "function$"},
-                  [{desc = Tarrow (_, _, _, _, Some arity_a)}; _],
+                  [{desc = Tarrow (_, _, _, _, Some arity_a)}],
                   _ );
           } )
         :: ( _,
@@ -4357,7 +4354,7 @@ let report_error env ppf = function
                desc =
                  Tconstr
                    ( Pident {name = "function$"},
-                     [{desc = Tarrow (_, _, _, _, Some arity_b)}; _],
+                     [{desc = Tarrow (_, _, _, _, Some arity_b)}],
                      _ );
              } )
         :: _,

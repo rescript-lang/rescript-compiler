@@ -123,7 +123,7 @@ let printSignature ~extractor ~signature =
       Ctype.newconstr (Pdot (Pident (Ident.create "React"), "element", 0)) []
     in
     match typ.desc with
-    | Tconstr (Pident {name = "function$"}, [typ; _], _) -> getComponentType typ
+    | Tconstr (Pident {name = "function$"}, [typ], _) -> getComponentType typ
     | Tarrow
         (_, {desc = Tconstr (Path.Pident propsId, typeArgs, _)}, retType, _, _)
       when Ident.name propsId = "props" ->

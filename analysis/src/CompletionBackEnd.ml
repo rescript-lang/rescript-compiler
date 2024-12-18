@@ -1362,7 +1362,7 @@ let rec completeTypedValue ?(typeArgContext : typeArgContext option) ~rawOpens
       | Tlink t1
       | Tsubst t1
       | Tpoly (t1, [])
-      | Tconstr (Pident {name = "function$"}, [t1; _], _) ->
+      | Tconstr (Pident {name = "function$"}, [t1], _) ->
         fnReturnsTypeT t1
       | Tarrow _ -> (
         match TypeUtils.extractFunctionType ~env ~package:full.package t with

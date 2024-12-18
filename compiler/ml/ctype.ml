@@ -2299,7 +2299,7 @@ and unify3 env t1 t1' t2 t2' =
   | Tfield _, Tfield _ ->
     (* special case for GADTs *)
     unify_fields env t1' t2'
-  | Tconstr (Pident {name = "function$"}, [t_fun; _], _), Tarrow _ ->
+  | Tconstr (Pident {name = "function$"}, [t_fun], _), Tarrow _ ->
     (* subtype: an uncurried function is cast to a curried one *)
     unify2 env t_fun t2
   | _ -> (

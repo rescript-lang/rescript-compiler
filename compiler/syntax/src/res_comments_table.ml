@@ -1865,7 +1865,7 @@ and walk_core_type typ t comments =
   | Ptyp_variant (row_fields, _, _) ->
     walk_list (row_fields |> List.map (fun rf -> RowField rf)) t comments
   | Ptyp_constr
-      ({txt = Lident "function$"}, [({ptyp_desc = Ptyp_arrow _} as desc); _]) ->
+      ({txt = Lident "function$"}, [({ptyp_desc = Ptyp_arrow _} as desc)]) ->
     walk_core_type desc t comments
   | Ptyp_constr (longident, typexprs) ->
     let before_longident, _afterLongident =

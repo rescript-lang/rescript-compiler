@@ -33,8 +33,7 @@
 
   Did you forget a `:` here? It signals the start of a type
 
-external add_nat :
-  (nat -> int (a:1), [ `Has_arity1 ]) function$ = "add_nat_bytecode"
+external add_nat : (nat -> int (a:1)) function$ = "add_nat_bytecode"
 module Error2 =
   struct
     type nonrec observation =
@@ -42,8 +41,8 @@ module Error2 =
       observed: int ;
       onStep:
         (currentValue:((unit)[@res.namedArgLoc ]) ->
-           [%rescript.typehole ] (a:1),
-          [ `Has_arity1 ]) function$
+           [%rescript.typehole ] (a:1))
+          function$
         }
   end
 module Error3 =

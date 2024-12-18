@@ -36,7 +36,7 @@ let findTypeViaLoc ~full ~debug (loc : Location.t) =
 
 let rec pathFromTypeExpr (t : Types.type_expr) =
   match t.desc with
-  | Tconstr (Pident {name = "function$"}, [t; _], _) -> pathFromTypeExpr t
+  | Tconstr (Pident {name = "function$"}, [t], _) -> pathFromTypeExpr t
   | Tconstr (path, _typeArgs, _)
   | Tlink {desc = Tconstr (path, _typeArgs, _)}
   | Tsubst {desc = Tconstr (path, _typeArgs, _)}
@@ -243,7 +243,7 @@ let rec extractFunctionType ~env ~package typ =
     match t.desc with
     | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> loop ~env acc t1
     | Tarrow (label, tArg, tRet, _, _) -> loop ~env ((label, tArg) :: acc) tRet
-    | Tconstr (Pident {name = "function$"}, [t; _], _) ->
+    | Tconstr (Pident {name = "function$"}, [t], _) ->
       extractFunctionType ~env ~package t
     | Tconstr (path, typeArgs, _) -> (
       match References.digConstructor ~env ~package path with
@@ -283,7 +283,7 @@ let rec extractFunctionType2 ?typeArgContext ~env ~package typ =
     | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> loop ?typeArgContext ~env acc t1
     | Tarrow (label, tArg, tRet, _, _) ->
       loop ?typeArgContext ~env ((label, tArg) :: acc) tRet
-    | Tconstr (Pident {name = "function$"}, [t; _], _) ->
+    | Tconstr (Pident {name = "function$"}, [t], _) ->
       extractFunctionType2 ?typeArgContext ~env ~package t
     | Tconstr (path, typeArgs, _) -> (
       match References.digConstructor ~env ~package path with
@@ -334,7 +334,7 @@ let rec extractType ?(printOpeningDebug = true)
     Some (Tstring env, typeArgContext)
   | Tconstr (Path.Pident {name = "exn"}, [], _) ->
     Some (Texn env, typeArgContext)
-  | Tconstr (Pident {name = "function$"}, [t; _], _) -> (
+  | Tconstr (Pident {name = "function$"}, [t], _) -> (
     match extractFunctionType2 ?typeArgContext t ~env ~package with
     | args, tRet, typeArgContext when args <> [] ->
       Some
@@ -910,7 +910,7 @@ let getArgs ~env (t : Types.type_expr) ~full =
     | Tlink t1
     | Tsubst t1
     | Tpoly (t1, [])
-    | Tconstr (Pident {name = "function$"}, [t1; _], _) ->
+    | Tconstr (Pident {name = "function$"}, [t1], _) ->
       getArgsLoop ~full ~env ~currentArgumentPosition t1
     | Tarrow (Labelled l, tArg, tRet, _, _) ->
       (SharedTypes.Completable.Labelled l, tArg)

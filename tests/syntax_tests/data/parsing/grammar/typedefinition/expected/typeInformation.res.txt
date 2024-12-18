@@ -71,8 +71,7 @@ type nonrec t = {
   x: int ;
   y: int }
 type nonrec callback =
-  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1)) function$ as 'callback
+type nonrec callback = (ReactEvent.Mouse.t -> unit as 'u (a:1)) function$
 type nonrec callback =
-  (ReactEvent.Mouse.t -> unit as 'u (a:1), [ `Has_arity1 ]) function$
-type nonrec callback =
-  (ReactEvent.Mouse.t -> unit (a:1), [ `Has_arity1 ]) function$ as 'callback
+  (ReactEvent.Mouse.t -> unit (a:1)) function$ as 'callback

@@ -53,8 +53,8 @@ let reifyStyle (type a) [arity:1](x : 'a) =
          let instanceOf =
            ([%raw
               (({js|function(x,y) {return +(x instanceof y)}|js})
-                [@res.template ])] : ('a -> constructor -> bool (a:2),
-                                       [ `Has_arity2 ]) function$)
+                [@res.template ])] : ('a -> constructor -> bool (a:2))
+                                       function$)
        end in
        ((if (Js.typeof x) = {js|string|js}
          then Obj.magic String
