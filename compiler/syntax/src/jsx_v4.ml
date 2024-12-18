@@ -1216,6 +1216,22 @@ let map_binding ~config ~empty_loc ~pstr_loc ~file_name ~rec_flag binding =
     let make_new_binding ~loc ~full_module_name binding =
       let props_pattern =
         match binding.pvb_expr with
+        | {pexp_desc = Pexp_apply (wrapper_expr, [(Nolabel, func_expr)])}
+          when is_forward_ref wrapper_expr ->
+          (* Case when using React.forwardRef *)
+          let rec check_invalid_forward_ref expr =
+            match expr.pexp_desc with
+            | Pexp_fun ((Labelled _ | Optional _), _, _, _, _) ->
+              Location.raise_errorf ~loc:expr.pexp_loc
+                "Components using React.forwardRef cannot use \
+                 @react.componentWithProps. Please use @react.component \
+                 instead."
+            | Pexp_fun (Nolabel, _, _, body, _) ->
+              check_invalid_forward_ref body
+            | _ -> ()
+          in
+          check_invalid_forward_ref func_expr;
+          Pat.var {txt = "props"; loc}
         | {
          pexp_desc =
            Pexp_fun (_, _, {ppat_desc = Ppat_constraint (_, typ)}, _, _);
