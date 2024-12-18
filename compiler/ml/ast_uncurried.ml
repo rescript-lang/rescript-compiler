@@ -86,3 +86,8 @@ let uncurried_type_get_arity_opt ~env typ =
   match (Ctype.expand_head env typ).desc with
   | Tconstr (Pident {name = "function$"}, [t], _) -> Some (tarrow_to_arity t)
   | _ -> None
+
+let remove_uncurried_type ~env typ =
+  match (Ctype.expand_head env typ).desc with
+  | Tconstr (Pident {name = "function$"}, [t], _) -> t
+  | _ -> typ

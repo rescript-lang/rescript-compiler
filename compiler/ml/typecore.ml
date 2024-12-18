@@ -3527,34 +3527,38 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let has_uncurried_type funct =
+  let force_tvar =
     let t = funct.exp_type in
     match (expand_head env t).desc with
-    | Tconstr (Pident {name = "function$"}, [t], _) ->
-      let arity =
-        match Ast_uncurried.tarrow_to_arity_opt t with
-        | Some arity -> arity
-        | None -> List.length sargs
-      in
-      Some (arity, t)
-    | _ -> None
+    | Tvar _ when uncurried -> true
+    | _ -> false
+  in
+  let has_uncurried_type funct =
+    let t = funct.exp_type in
+    let inner_t = Ast_uncurried.remove_uncurried_type ~env t in
+    if force_tvar then Some (List.length sargs, inner_t)
+    else
+      match (Ctype.repr inner_t).desc with
+      | Tarrow (_, _, _, _, Some arity) -> Some (arity, inner_t)
+      | _ -> None
   in
   let force_uncurried_type funct =
-    match has_uncurried_type funct with
-    | None -> (
+    if force_tvar then
       let arity = List.length sargs in
       let uncurried_typ =
         Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
       in
-      match (expand_head env funct.exp_type).desc with
-      | Tvar _ | Tarrow _ -> unify_exp env funct uncurried_typ
-      | _ ->
-        raise
-          (Error
-             ( funct.exp_loc,
-               env,
-               Apply_non_function (expand_head env funct.exp_type) )))
-    | Some _ -> ()
+      unify_exp env funct uncurried_typ
+    else if
+      Ast_uncurried.tarrow_to_arity_opt
+        (Ast_uncurried.remove_uncurried_type ~env funct.exp_type)
+      = None
+    then
+      raise
+        (Error
+           ( funct.exp_loc,
+             env,
+             Apply_non_function (expand_head env funct.exp_type) ))
   in
   let extract_uncurried_type funct =
     let t = funct.exp_type in
