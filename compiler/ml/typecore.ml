@@ -315,8 +315,6 @@ let unify_pat_types loc env ty ty' =
 
 (* unification inside type_exp and type_expect *)
 let unify_exp_types ?type_clash_context loc env ty expected_ty =
-  (* Format.eprintf "@[%a@ %a@]@." Printtyp.raw_type_expr exp.exp_type
-     Printtyp.raw_type_expr expected_ty; *)
   try unify env ty expected_ty with
   | Unify trace ->
     raise (Error (loc, env, Expr_type_clash (trace, type_clash_context)))
@@ -3268,7 +3266,7 @@ and type_function ?in_function ~arity loc attrs env ty_expected_ l caselist =
     match arity with
     | None -> ty_expected_
     | Some arity ->
-      let fun_t = newvar () in
+      let fun_t = newty (Tarrow (l, newvar (), newvar (), Cok, Some arity)) in
       let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity fun_t in
       unify_exp_types loc env uncurried_typ ty_expected_;
       fun_t
@@ -3519,7 +3517,6 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
 
 and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     targs * Types.type_expr * bool =
-  (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
     List.fold_left
       (fun ty_fun (l, ty, lv) -> newty2 lv (Tarrow (l, ty, ty_fun, Cok, None)))
@@ -3530,15 +3527,20 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let has_uncurried_type t =
+  let has_uncurried_type funct =
+    let t = funct.exp_type in
     match (expand_head env t).desc with
-    | Tconstr (Pident {name = "function$"}, [t; t_arity], _) ->
-      let arity = Ast_uncurried.type_to_arity t_arity in
+    | Tconstr (Pident {name = "function$"}, [t; _t_arity], _) ->
+      let arity =
+        match Ast_uncurried.tarrow_to_arity_opt t with
+        | Some arity -> arity
+        | None -> List.length sargs
+      in
       Some (arity, t)
     | _ -> None
   in
   let force_uncurried_type funct =
-    match has_uncurried_type funct.exp_type with
+    match has_uncurried_type funct with
     | None -> (
       let arity = List.length sargs in
       let uncurried_typ =
@@ -3554,8 +3556,9 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
                Apply_non_function (expand_head env funct.exp_type) )))
     | Some _ -> ()
   in
-  let extract_uncurried_type t =
-    match has_uncurried_type t with
+  let extract_uncurried_type funct =
+    let t = funct.exp_type in
+    match has_uncurried_type funct with
     | Some (arity, t1) ->
       if List.length sargs > arity then
         raise
@@ -3566,8 +3569,8 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
       (t1, arity)
     | None -> (t, max_int)
   in
-  let update_uncurried_arity ~nargs t new_t =
-    match has_uncurried_type t with
+  let update_uncurried_arity ~nargs funct new_t =
+    match has_uncurried_type funct with
     | Some (arity, _) ->
       let newarity = arity - nargs in
       let fully_applied = newarity <= 0 in
@@ -3576,7 +3579,8 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
           (Error
              ( funct.exp_loc,
                env,
-               Uncurried_arity_mismatch (t, arity, List.length sargs) ));
+               Uncurried_arity_mismatch
+                 (funct.exp_type, arity, List.length sargs) ));
       let new_t =
         if fully_applied then new_t
         else Ast_uncurried.make_uncurried_type ~env ~arity:newarity new_t
@@ -3721,7 +3725,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
                     (Ext_list.filter labels (fun x -> x <> Nolabel))) ))
   in
   if uncurried then force_uncurried_type funct;
-  let ty, max_arity = extract_uncurried_type funct.exp_type in
+  let ty, max_arity = extract_uncurried_type funct in
   let top_arity = if uncurried then Some max_arity else None in
   match sargs with
   (* Special case for ignore: avoid discarding warning *)
@@ -3744,7 +3748,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
         ~sargs ~top_arity
     in
     let fully_applied, ret_t =
-      update_uncurried_arity funct.exp_type
+      update_uncurried_arity funct
         ~nargs:(List.length !ignored + List.length sargs)
         ret_t
     in
@@ -4340,13 +4344,27 @@ let report_error env ppf = function
       "This function is an uncurried function where a curried function is \
        expected"
   | Expr_type_clash
-      ( (_, {desc = Tconstr (Pident {name = "function$"}, [_; t_a], _)})
-        :: (_, {desc = Tconstr (Pident {name = "function$"}, [_; t_b], _)})
+      ( ( _,
+          {
+            desc =
+              Tconstr
+                ( Pident {name = "function$"},
+                  [{desc = Tarrow (_, _, _, _, Some arity_a)}; _],
+                  _ );
+          } )
+        :: ( _,
+             {
+               desc =
+                 Tconstr
+                   ( Pident {name = "function$"},
+                     [{desc = Tarrow (_, _, _, _, Some arity_b)}; _],
+                     _ );
+             } )
         :: _,
         _ )
-    when Ast_uncurried.type_to_arity t_a <> Ast_uncurried.type_to_arity t_b ->
-    let arity_a = Ast_uncurried.type_to_arity t_a |> string_of_int in
-    let arity_b = Ast_uncurried.type_to_arity t_b |> string_of_int in
+    when arity_a <> arity_b ->
+    let arity_a = arity_a |> string_of_int in
+    let arity_b = arity_b |> string_of_int in
     report_arity_mismatch ~arity_a ~arity_b ppf
   | Expr_type_clash
       ( ( _,

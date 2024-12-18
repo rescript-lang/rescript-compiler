@@ -146,6 +146,10 @@ let string_of_label = function
   | Labelled s -> s
   | Optional s -> "?" ^ s
 
+let string_of_arity = function
+  | None -> ""
+  | Some arity -> string_of_int arity
+
 let visited = ref []
 let rec raw_type ppf ty =
   let ty = safe_repr [] ty in
@@ -159,9 +163,10 @@ and raw_type_list tl = raw_list raw_type tl
 
 and raw_type_desc ppf = function
   | Tvar name -> fprintf ppf "Tvar %a" print_name name
-  | Tarrow (l, t1, t2, c, _) ->
-    fprintf ppf "@[<hov1>Tarrow(\"%s\",@,%a,@,%a,@,%s)@]" (string_of_label l)
-      raw_type t1 raw_type t2 (safe_commu_repr [] c)
+  | Tarrow (l, t1, t2, c, a) ->
+    fprintf ppf "@[<hov1>Tarrow(\"%s\",@,%a,@,%a,@,%s,@,%s)@]"
+      (string_of_label l) raw_type t1 raw_type t2 (safe_commu_repr [] c)
+      (string_of_arity a)
   | Ttuple tl -> fprintf ppf "@[<1>Ttuple@,%a@]" raw_type_list tl
   | Tconstr (p, tl, abbrev) ->
     fprintf ppf "@[<hov1>Tconstr(@,%a,@,%a,@,%a)@]" path p raw_type_list tl
