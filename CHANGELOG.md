@@ -30,7 +30,7 @@
 - Remove unused code from Location and Rescript_cpp modules. https://github.com/rescript-lang/rescript/pull/7150
 - Build with OCaml 5.2.1. https://github.com/rescript-lang/rescript-compiler/pull/7201
 - AST cleanup: Remove `Function$` entirely for function definitions. https://github.com/rescript-lang/rescript/pull/7200
-
+- AST cleanup: store arity in function type https://github.com/rescript-lang/rescript/pull/7195
 
 # 12.0.0-alpha.5
 

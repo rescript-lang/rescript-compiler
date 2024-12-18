@@ -238,7 +238,7 @@ let getJsxLabels ~componentPath ~findTypeOfValue ~package =
       | Tlink t1
       | Tsubst t1
       | Tpoly (t1, [])
-      | Tconstr (Pident {name = "function$"}, [t1; _], _) ->
+      | Tconstr (Pident {name = "function$"}, [t1], _) ->
         getLabels t1
       | Tconstr (p, [propsType], _) when Path.name p = "React.component" -> (
         let rec getPropsType (t : Types.type_expr) =
@@ -251,7 +251,7 @@ let getJsxLabels ~componentPath ~findTypeOfValue ~package =
         match propsType |> getPropsType with
         | Some (path, typeArgs) -> getFields ~path ~typeArgs
         | None -> [])
-      | Tarrow (Nolabel, {desc = Tconstr (path, typeArgs, _)}, _, _)
+      | Tarrow (Nolabel, {desc = Tconstr (path, typeArgs, _)}, _, _, _)
         when Path.last path = "props" ->
         getFields ~path ~typeArgs
       | Tconstr (clPath, [{desc = Tconstr (path, typeArgs, _)}; _], _)
@@ -259,7 +259,7 @@ let getJsxLabels ~componentPath ~findTypeOfValue ~package =
              && Path.last path = "props" ->
         (* JSX V4 external or interface *)
         getFields ~path ~typeArgs
-      | Tarrow (Nolabel, typ, _, _) -> (
+      | Tarrow (Nolabel, typ, _, _, _) -> (
         (* Component without the JSX PPX, like a make fn taking a hand-written
            type props. *)
         let rec digToConstr typ =

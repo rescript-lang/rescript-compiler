@@ -382,7 +382,7 @@ let valueDetail (typ : Types.type_expr) =
   let rec collectSignatureTypes (typ_desc : Types.type_desc) =
     match typ_desc with
     | Tlink t | Tsubst t | Tpoly (t, []) -> collectSignatureTypes t.desc
-    | Tconstr (Path.Pident {name = "function$"}, [t; _], _) ->
+    | Tconstr (Path.Pident {name = "function$"}, [t], _) ->
       collectSignatureTypes t.desc
     | Tconstr (path, ts, _) -> (
       let p = path_to_string path in
@@ -395,7 +395,7 @@ let valueDetail (typ : Types.type_expr) =
                  collectSignatureTypes t.desc)
         in
         [{path = p; genericParameters = ts}])
-    | Tarrow (_, t1, t2, _) ->
+    | Tarrow (_, t1, t2, _, _) ->
       collectSignatureTypes t1.desc @ collectSignatureTypes t2.desc
     | Tvar None -> [{path = "_"; genericParameters = []}]
     | _ -> []

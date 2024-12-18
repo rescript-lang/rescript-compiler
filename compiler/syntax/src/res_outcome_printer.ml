@@ -156,11 +156,10 @@ let rec print_out_type_doc (out_type : Outcometree.out_type) =
         [(Otyp_arrow _ as arrow_type)] ) ->
     (* Compatibility with compiler up to v10.x *)
     print_out_arrow_type arrow_type
-  | Otyp_constr (Oide_ident "function$", [(Otyp_arrow _ as arrow_type); _arity])
-    ->
-    (* function$<(int, int) => int, [#2]> -> (. int, int) => int *)
+  | Otyp_constr (Oide_ident "function$", [(Otyp_arrow _ as arrow_type)]) ->
+    (* function$<(int, int) => int> -> (int, int) => int *)
     print_out_arrow_type arrow_type
-  | Otyp_constr (Oide_ident "function$", [Otyp_var _; _arity]) ->
+  | Otyp_constr (Oide_ident "function$", [Otyp_var _]) ->
     (* function$<'a, arity> -> _ => _ *)
     print_out_type_doc (Otyp_stuff "_ => _")
   | Otyp_constr (out_ident, []) ->
@@ -299,7 +298,7 @@ and print_out_arrow_type typ =
       | [
        ( _,
          ( Otyp_tuple _ | Otyp_arrow _
-         | Otyp_constr (Oide_ident "function$", [Otyp_arrow _; _]) ) );
+         | Otyp_constr (Oide_ident "function$", [Otyp_arrow _]) ) );
       ] ->
         true
       (* single argument should not be wrapped *)

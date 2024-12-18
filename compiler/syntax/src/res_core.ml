@@ -4072,7 +4072,7 @@ and parse_poly_type_expr p =
         let return_type = parse_typ_expr ~alias:false p in
         let loc = mk_loc typ.Parsetree.ptyp_loc.loc_start p.prev_end_pos in
         let t_fun =
-          Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
+          Ast_helper.Typ.arrow ~loc ~arity:None Asttypes.Nolabel typ return_type
         in
         Ast_uncurried.uncurried_type ~loc ~arity:1 t_fun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
@@ -4397,7 +4397,7 @@ and parse_es6_arrow_type ~attrs p =
     Parser.expect EqualGreater p;
     let return_type = parse_typ_expr ~alias:false p in
     let loc = mk_loc start_pos p.prev_end_pos in
-    Ast_helper.Typ.arrow ~loc ~attrs arg typ return_type
+    Ast_helper.Typ.arrow ~loc ~attrs ~arity:None arg typ return_type
   | DocComment _ -> assert false
   | _ ->
     let parameters = parse_type_parameters p in
@@ -4425,7 +4425,9 @@ and parse_es6_arrow_type ~attrs p =
               else arity
             | _ -> arity
           in
-          let t_arg = Ast_helper.Typ.arrow ~loc ~attrs arg_lbl typ t in
+          let t_arg =
+            Ast_helper.Typ.arrow ~loc ~attrs ~arity:None arg_lbl typ t
+          in
           if param_num = 1 then
             (param_num - 1, Ast_uncurried.uncurried_type ~loc ~arity t_arg, 1)
           else (param_num - 1, t_arg, arity + 1))
@@ -4485,7 +4487,7 @@ and parse_arrow_type_rest ~es6_arrow ~start_pos typ p =
     let return_type = parse_typ_expr ~alias:false p in
     let loc = mk_loc start_pos p.prev_end_pos in
     let arrow_typ =
-      Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
+      Ast_helper.Typ.arrow ~loc ~arity:None Asttypes.Nolabel typ return_type
     in
     Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_typ
   | _ -> typ
@@ -5094,7 +5096,7 @@ and parse_type_equation_or_constr_decl p =
         let return_type = parse_typ_expr ~alias:false p in
         let loc = mk_loc uident_start_pos p.prev_end_pos in
         let arrow_type =
-          Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ return_type
+          Ast_helper.Typ.arrow ~loc ~arity:None Asttypes.Nolabel typ return_type
         in
         let arrow_type =
           Ast_uncurried.uncurried_type ~loc ~arity:1 arrow_type

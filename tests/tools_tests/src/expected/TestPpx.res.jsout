@@ -39,6 +39,8 @@ async function fpromise(promise, _x) {
   return await promise;
 }
 
+let Uncurried = {};
+
 let a = "A";
 
 let b = "B";
@@ -52,4 +54,5 @@ exports.vv = vv;
 exports.OptionalFields = OptionalFields;
 exports.Arity = Arity;
 exports.fpromise = fpromise;
+exports.Uncurried = Uncurried;
 /*  Not a pure module */

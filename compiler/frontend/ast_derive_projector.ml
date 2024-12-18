@@ -140,7 +140,7 @@ let init () =
               | Ptype_record label_declarations ->
                 Ext_list.map label_declarations (fun {pld_name; pld_type} ->
                     Ast_comb.single_non_rec_val ?attrs:gentype_attrs pld_name
-                      (Ast_compatible.arrow core_type pld_type
+                      (Ast_compatible.arrow ~arity:None core_type pld_type
                       (*arity will alwys be 1 since these are single param functions*)
                       |> handle_uncurried_type_tranform ~arity:1
                            ~loc:pld_name.loc))
@@ -169,7 +169,7 @@ let init () =
                     Ast_comb.single_non_rec_val ?attrs:gentype_attrs
                       {loc; txt = Ext_string.uncapitalize_ascii con_name}
                       (Ext_list.fold_right pcd_args annotate_type (fun x acc ->
-                           Ast_compatible.arrow x acc)
+                           Ast_compatible.arrow ~arity:None x acc)
                       |> handle_uncurried_type_tranform ~arity ~loc))
               | Ptype_open | Ptype_abstract ->
                 Ast_derive_util.not_applicable tdcl.ptype_loc deriving_name;
