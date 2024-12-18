@@ -109,7 +109,17 @@ module T = struct
       | Ptyp_constr
           (lid, [({ptyp_desc = Ptyp_arrow (lbl, t1, t2, _)} as fun_t); t_arity])
         when lid.txt = Lident "function$" ->
-        let arity = Ast_uncurried.arity_from_type t_arity in
+        let decode_arity_string arity_s =
+          int_of_string
+            ((String.sub [@doesNotRaise]) arity_s 9 (String.length arity_s - 9))
+        in
+        let arity_from_type (typ : Parsetree.core_type) =
+          match typ.ptyp_desc with
+          | Ptyp_variant ([Rtag ({txt}, _, _, _)], _, _) ->
+            decode_arity_string txt
+          | _ -> assert false
+        in
+        let arity = arity_from_type t_arity in
         let fun_t =
           {fun_t with ptyp_desc = Ptyp_arrow (lbl, t1, t2, Some arity)}
         in

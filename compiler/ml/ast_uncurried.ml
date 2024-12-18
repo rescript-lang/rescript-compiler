@@ -1,19 +1,11 @@
 (* Uncurried AST *)
 
 let encode_arity_string arity = "Has_arity" ^ string_of_int arity
-let decode_arity_string arity_s =
-  int_of_string
-    ((String.sub [@doesNotRaise]) arity_s 9 (String.length arity_s - 9))
 
 let arity_type ~loc arity =
   Ast_helper.Typ.variant ~loc
     [Rtag ({txt = encode_arity_string arity; loc}, [], true, [])]
     Closed None
-
-let arity_from_type (typ : Parsetree.core_type) =
-  match typ.ptyp_desc with
-  | Ptyp_variant ([Rtag ({txt}, _, _, _)], _, _) -> decode_arity_string txt
-  | _ -> assert false
 
 let uncurried_type ~loc ~arity (t_arg : Parsetree.core_type) =
   let t_arg =
@@ -52,8 +44,10 @@ let core_type_is_uncurried_fun (typ : Parsetree.core_type) =
 
 let core_type_extract_uncurried_fun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
-  | Ptyp_constr ({txt = Lident "function$"}, [t_arg; t_arity]) ->
-    (arity_from_type t_arity, t_arg)
+  | Ptyp_constr
+      ( {txt = Lident "function$"},
+        [({ptyp_desc = Ptyp_arrow (_, _, _, Some arity)} as t_arg); _] ) ->
+    (arity, t_arg)
   | _ -> assert false
 
 let type_is_uncurried_fun = Ast_uncurried_utils.type_is_uncurried_fun
