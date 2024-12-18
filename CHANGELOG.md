@@ -13,6 +13,7 @@
 # 12.0.0-alpha.6 (Unreleased)
 - Fix exponential notation syntax. https://github.com/rescript-lang/rescript/pull/7174
 - Add `Option.all` & `Result.all` helpers. https://github.com/rescript-lang/rescript/pull/7181
+- Add `@react.componentWithProps` that explicitly handles the props with shared props: https://github.com/rescript-lang/rescript/pull/7203
 
 #### :bug: Bug fix
 - Fix bug where a ref assignment is moved ouside a conditional. https://github.com/rescript-lang/rescript/pull/7176
