@@ -101,3 +101,8 @@ let core_type_remove_function_dollar (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
   | Ptyp_constr ({txt = Lident "function$"}, [t]) -> t
   | _ -> typ
+
+let tcore_type_remove_function_dollar (typ : Typedtree.core_type) =
+  match typ.ctyp_desc with
+  | Ttyp_constr (Pident {name = "function$"}, _, [t]) -> t
+  | _ -> typ

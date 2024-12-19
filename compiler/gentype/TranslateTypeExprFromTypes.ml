@@ -312,7 +312,8 @@ let rec translate_arrow_type ~config ~type_vars_gen ~type_env ~rev_arg_deps
     {dependencies = all_deps; type_ = function_type}
 
 and translateTypeExprFromTypes_ ~config ~type_vars_gen ~type_env
-    (type_expr : Types.type_expr) =
+    (type_expr_ : Types.type_expr) =
+  let type_expr = Ast_uncurried.remove_function_dollar type_expr_ in
   match type_expr.desc with
   | Tvar None ->
     let type_name =
