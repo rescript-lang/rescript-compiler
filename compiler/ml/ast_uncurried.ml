@@ -42,7 +42,10 @@ let core_type_extract_uncurried_fun (typ : Parsetree.core_type) =
     (arity, t_arg)
   | _ -> assert false
 
-let type_is_uncurried_fun = Ast_uncurried_utils.type_is_uncurried_fun
+let type_is_uncurried_fun (typ : Types.type_expr) =
+  match typ.desc with
+  | Tconstr (Pident {name = "function$"}, [{desc = Tarrow _}], _) -> true
+  | _ -> false
 
 let type_extract_uncurried_fun (typ : Types.type_expr) =
   match typ.desc with
@@ -86,3 +89,23 @@ let uncurried_type_get_arity_opt ~env typ =
   match (Ctype.expand_head env typ).desc with
   | Tconstr (Pident {name = "function$"}, [t], _) -> Some (tarrow_to_arity t)
   | _ -> None
+
+let remove_function_dollar ?env typ =
+  match
+    (match env with
+    | Some env -> Ctype.expand_head env typ
+    | None -> Ctype.repr typ)
+      .desc
+  with
+  | Tconstr (Pident {name = "function$"}, [t], _) -> t
+  | _ -> typ
+
+let core_type_remove_function_dollar (typ : Parsetree.core_type) =
+  match typ.ptyp_desc with
+  | Ptyp_constr ({txt = Lident "function$"}, [t]) -> t
+  | _ -> typ
+
+let tcore_type_remove_function_dollar (typ : Typedtree.core_type) =
+  match typ.ctyp_desc with
+  | Ttyp_constr (Pident {name = "function$"}, _, [t]) -> t
+  | _ -> typ

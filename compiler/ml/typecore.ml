@@ -2424,17 +2424,16 @@ and type_expect_ ?type_clash_context ?in_function ?(recarg = Rejected) env sexp
     end_def ();
     wrap_trace_gadt_instances env (lower_args env []) ty;
     begin_def ();
-    let uncurried =
+    let total_app =
       not
       @@ Ext_list.exists sexp.pexp_attributes (fun ({txt}, _) ->
              txt = "res.partial")
-      && (not @@ is_automatic_curried_application env funct)
     in
     let type_clash_context = type_clash_context_from_function sexp sfunct in
     let args, ty_res, fully_applied =
       match translate_unified_ops env funct sargs with
       | Some (targs, result_type) -> (targs, result_type, true)
-      | None -> type_application ?type_clash_context uncurried env funct sargs
+      | None -> type_application ?type_clash_context total_app env funct sargs
     in
     end_def ();
     unify_var env (newvar ()) funct.exp_type;
@@ -3414,12 +3413,6 @@ and type_argument ?type_clash_context ?recarg env sarg ty_expected' ty_expected
   unify_exp ?type_clash_context env texp ty_expected;
   texp
 
-and is_automatic_curried_application env funct =
-  (* When a curried function is used with uncurried application, treat it as a curried application *)
-  match (expand_head env funct.exp_type).desc with
-  | Tarrow _ -> true
-  | _ -> false
-
 (** This is ad-hoc translation for unifying specific primitive operations
      See [Unified_ops] module for detailed explanation.
   *)
@@ -3515,7 +3508,7 @@ and translate_unified_ops (env : Env.t) (funct : Typedtree.expression)
     | _ -> None)
   | _ -> None
 
-and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
+and type_application ?type_clash_context total_app env funct (sargs : sargs) :
     targs * Types.type_expr * bool =
   let result_type omitted ty_fun =
     List.fold_left
@@ -3527,34 +3520,38 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let has_uncurried_type funct =
+  let force_tvar =
     let t = funct.exp_type in
     match (expand_head env t).desc with
-    | Tconstr (Pident {name = "function$"}, [t], _) ->
-      let arity =
-        match Ast_uncurried.tarrow_to_arity_opt t with
-        | Some arity -> arity
-        | None -> List.length sargs
-      in
-      Some (arity, t)
-    | _ -> None
+    | Tvar _ when total_app -> true
+    | _ -> false
+  in
+  let has_uncurried_type funct =
+    let t = funct.exp_type in
+    let inner_t = Ast_uncurried.remove_function_dollar ~env t in
+    if force_tvar then Some (List.length sargs, inner_t)
+    else
+      match (Ctype.repr inner_t).desc with
+      | Tarrow (_, _, _, _, Some arity) -> Some (arity, inner_t)
+      | _ -> None
   in
   let force_uncurried_type funct =
-    match has_uncurried_type funct with
-    | None -> (
+    if force_tvar then
       let arity = List.length sargs in
       let uncurried_typ =
         Ast_uncurried.make_uncurried_type ~env ~arity (newvar ())
       in
-      match (expand_head env funct.exp_type).desc with
-      | Tvar _ | Tarrow _ -> unify_exp env funct uncurried_typ
-      | _ ->
-        raise
-          (Error
-             ( funct.exp_loc,
-               env,
-               Apply_non_function (expand_head env funct.exp_type) )))
-    | Some _ -> ()
+      unify_exp env funct uncurried_typ
+    else if
+      Ast_uncurried.tarrow_to_arity_opt
+        (Ast_uncurried.remove_function_dollar ~env funct.exp_type)
+      = None
+    then
+      raise
+        (Error
+           ( funct.exp_loc,
+             env,
+             Apply_non_function (expand_head env funct.exp_type) ))
   in
   let extract_uncurried_type funct =
     let t = funct.exp_type in
@@ -3574,7 +3571,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
     | Some (arity, _) ->
       let newarity = arity - nargs in
       let fully_applied = newarity <= 0 in
-      if uncurried && not fully_applied then
+      if total_app && not fully_applied then
         raise
           (Error
              ( funct.exp_loc,
@@ -3600,7 +3597,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
             (List.rev args),
           instance env (result_type omitted ty_fun) )
       in
-      if List.length args < max_arity && uncurried then
+      if List.length args < max_arity && total_app then
         match (expand_head env ty_fun).desc with
         | Tarrow (Optional l, t1, t2, _, _) ->
           ignored := (Optional l, t1, ty_fun.level) :: !ignored;
@@ -3613,7 +3610,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
         | _ -> collect_args ()
       else collect_args ()
     | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
-      when uncurried && omitted = [] && args <> []
+      when total_app && omitted = [] && args <> []
            && List.length args = List.length !ignored ->
       (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
       type_unknown_args max_arity ~args ~top_arity:None omitted ty_fun []
@@ -3676,7 +3673,7 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
       let sargs, omitted, arg =
         match extract_label name sargs with
         | None ->
-          if optional && (uncurried || label_assoc Nolabel sargs) then (
+          if optional && (total_app || label_assoc Nolabel sargs) then (
             ignored := (l, ty, lv) :: !ignored;
             ( sargs,
               omitted,
@@ -3724,9 +3721,9 @@ and type_application ?type_clash_context uncurried env funct (sargs : sargs) :
                  (List.map Printtyp.string_of_label
                     (Ext_list.filter labels (fun x -> x <> Nolabel))) ))
   in
-  if uncurried then force_uncurried_type funct;
+  if total_app then force_uncurried_type funct;
   let ty, max_arity = extract_uncurried_type funct in
-  let top_arity = if uncurried then Some max_arity else None in
+  let top_arity = if total_app then Some max_arity else None in
   match sargs with
   (* Special case for ignore: avoid discarding warning *)
   | [(Nolabel, sarg)] when is_ignore ~env ~arity:top_arity funct ->
@@ -4279,7 +4276,18 @@ let type_expr ppf typ =
   Printtyp.reset_and_mark_loops typ;
   Printtyp.type_expr ppf typ
 
-let report_error env ppf = function
+let report_error env ppf error =
+  let error =
+    match error with
+    | Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context) ->
+      let s1 = Ast_uncurried.remove_function_dollar s1 in
+      let s2 = Ast_uncurried.remove_function_dollar s2 in
+      let t1 = Ast_uncurried.remove_function_dollar t1 in
+      let t2 = Ast_uncurried.remove_function_dollar t2 in
+      Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context)
+    | _ -> error
+  in
+  match error with
   | Polymorphic_label lid ->
     fprintf ppf "@[The record field %a is polymorphic.@ %s@]" longident lid
       "You cannot instantiate it in a pattern."
@@ -4325,38 +4333,16 @@ let report_error env ppf = function
       (Ident.name id);
     spellcheck_idents ppf id valid_idents
   | Expr_type_clash
-      ( (_, {desc = Tarrow _})
-        :: (_, {desc = Tconstr (Pident {name = "function$"}, _, _)})
+      ( (_, {desc = Tarrow (_, _, _, _, None)})
+        :: (_, {desc = Tarrow (_, _, _, _, Some _)})
         :: _,
         _ ) ->
     fprintf ppf
       "This function is a curried function where an uncurried function is \
        expected"
   | Expr_type_clash
-      ( (_, {desc = Tconstr (Pident {name = "function$"}, [{desc = Tvar _}], _)})
-        :: (_, {desc = Tarrow _})
-        :: _,
-        _ ) ->
-    fprintf ppf
-      "This function is an uncurried function where a curried function is \
-       expected"
-  | Expr_type_clash
-      ( ( _,
-          {
-            desc =
-              Tconstr
-                ( Pident {name = "function$"},
-                  [{desc = Tarrow (_, _, _, _, Some arity_a)}],
-                  _ );
-          } )
-        :: ( _,
-             {
-               desc =
-                 Tconstr
-                   ( Pident {name = "function$"},
-                     [{desc = Tarrow (_, _, _, _, Some arity_b)}],
-                     _ );
-             } )
+      ( (_, {desc = Tarrow (_, _, _, _, Some arity_a)})
+        :: (_, {desc = Tarrow (_, _, _, _, Some arity_b)})
         :: _,
         _ )
     when arity_a <> arity_b ->
