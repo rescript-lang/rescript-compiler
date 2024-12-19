@@ -4276,7 +4276,18 @@ let type_expr ppf typ =
   Printtyp.reset_and_mark_loops typ;
   Printtyp.type_expr ppf typ
 
-let report_error env ppf = function
+let report_error env ppf error =
+  let error =
+    match error with
+    | Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context) ->
+      let s1 = Ast_uncurried.remove_uncurried_type s1 in
+      let s2 = Ast_uncurried.remove_uncurried_type s2 in
+      let t1 = Ast_uncurried.remove_uncurried_type t1 in
+      let t2 = Ast_uncurried.remove_uncurried_type t2 in
+      Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context)
+    | _ -> error
+  in
+  match error with
   | Polymorphic_label lid ->
     fprintf ppf "@[The record field %a is polymorphic.@ %s@]" longident lid
       "You cannot instantiate it in a pattern."
@@ -4322,38 +4333,16 @@ let report_error env ppf = function
       (Ident.name id);
     spellcheck_idents ppf id valid_idents
   | Expr_type_clash
-      ( (_, {desc = Tarrow _})
-        :: (_, {desc = Tconstr (Pident {name = "function$"}, _, _)})
+      ( (_, {desc = Tarrow (_, _, _, _, None)})
+        :: (_, {desc = Tarrow (_, _, _, _, Some _)})
         :: _,
         _ ) ->
     fprintf ppf
       "This function is a curried function where an uncurried function is \
        expected"
   | Expr_type_clash
-      ( (_, {desc = Tconstr (Pident {name = "function$"}, [{desc = Tvar _}], _)})
-        :: (_, {desc = Tarrow _})
-        :: _,
-        _ ) ->
-    fprintf ppf
-      "This function is an uncurried function where a curried function is \
-       expected"
-  | Expr_type_clash
-      ( ( _,
-          {
-            desc =
-              Tconstr
-                ( Pident {name = "function$"},
-                  [{desc = Tarrow (_, _, _, _, Some arity_a)}],
-                  _ );
-          } )
-        :: ( _,
-             {
-               desc =
-                 Tconstr
-                   ( Pident {name = "function$"},
-                     [{desc = Tarrow (_, _, _, _, Some arity_b)}],
-                     _ );
-             } )
+      ( (_, {desc = Tarrow (_, _, _, _, Some arity_a)})
+        :: (_, {desc = Tarrow (_, _, _, _, Some arity_b)})
         :: _,
         _ )
     when arity_a <> arity_b ->
