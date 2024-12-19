@@ -42,7 +42,10 @@ let core_type_extract_uncurried_fun (typ : Parsetree.core_type) =
     (arity, t_arg)
   | _ -> assert false
 
-let type_is_uncurried_fun = Ast_uncurried_utils.type_is_uncurried_fun
+let type_is_uncurried_fun (typ : Types.type_expr) =
+  match typ.desc with
+  | Tconstr (Pident {name = "function$"}, [{desc = Tarrow _}], _) -> true
+  | _ -> false
 
 let type_extract_uncurried_fun (typ : Types.type_expr) =
   match typ.desc with
