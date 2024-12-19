@@ -87,7 +87,7 @@ let uncurried_type_get_arity_opt ~env typ =
   | Tconstr (Pident {name = "function$"}, [t], _) -> Some (tarrow_to_arity t)
   | _ -> None
 
-let remove_uncurried_type ?env typ =
+let remove_function_dollar ?env typ =
   match
     (match env with
     | Some env -> Ctype.expand_head env typ
@@ -95,4 +95,9 @@ let remove_uncurried_type ?env typ =
       .desc
   with
   | Tconstr (Pident {name = "function$"}, [t], _) -> t
+  | _ -> typ
+
+let core_type_remove_function_dollar (typ : Parsetree.core_type) =
+  match typ.ptyp_desc with
+  | Ptyp_constr ({txt = Lident "function$"}, [t]) -> t
   | _ -> typ

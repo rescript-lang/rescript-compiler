@@ -3528,7 +3528,7 @@ and type_application ?type_clash_context total_app env funct (sargs : sargs) :
   in
   let has_uncurried_type funct =
     let t = funct.exp_type in
-    let inner_t = Ast_uncurried.remove_uncurried_type ~env t in
+    let inner_t = Ast_uncurried.remove_function_dollar ~env t in
     if force_tvar then Some (List.length sargs, inner_t)
     else
       match (Ctype.repr inner_t).desc with
@@ -3544,7 +3544,7 @@ and type_application ?type_clash_context total_app env funct (sargs : sargs) :
       unify_exp env funct uncurried_typ
     else if
       Ast_uncurried.tarrow_to_arity_opt
-        (Ast_uncurried.remove_uncurried_type ~env funct.exp_type)
+        (Ast_uncurried.remove_function_dollar ~env funct.exp_type)
       = None
     then
       raise
@@ -4280,10 +4280,10 @@ let report_error env ppf error =
   let error =
     match error with
     | Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context) ->
-      let s1 = Ast_uncurried.remove_uncurried_type s1 in
-      let s2 = Ast_uncurried.remove_uncurried_type s2 in
-      let t1 = Ast_uncurried.remove_uncurried_type t1 in
-      let t2 = Ast_uncurried.remove_uncurried_type t2 in
+      let s1 = Ast_uncurried.remove_function_dollar s1 in
+      let s2 = Ast_uncurried.remove_function_dollar s2 in
+      let t1 = Ast_uncurried.remove_function_dollar t1 in
+      let t2 = Ast_uncurried.remove_function_dollar t2 in
       Expr_type_clash ((t1, s1) :: (t2, s2) :: trace, type_clash_context)
     | _ -> error
   in
